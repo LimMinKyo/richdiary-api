@@ -7,7 +7,7 @@ services:
     ports:
       - ${DB_PORT}:3306
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       TZ: Asia/Seoul
     volumes:
       - ./db/mysql/data:/var/lib/mysql
