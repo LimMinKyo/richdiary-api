@@ -43,6 +43,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/eslint-plugin", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:5.45.0"],\
             ["@typescript-eslint/parser", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:5.45.0"],\
             ["@yarnpkg/sdks", "npm:3.0.0-rc.32"],\
+            ["class-validator", "npm:0.14.0"],\
             ["eslint", "npm:8.29.0"],\
             ["eslint-config-prettier", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:8.5.0"],\
             ["eslint-plugin-prettier", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:4.2.1"],\
@@ -1432,7 +1433,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rxjs", null],\
             ["cache-manager", null],\
             ["class-transformer", null],\
-            ["class-validator", null],\
+            ["class-validator", "npm:0.14.0"],\
             ["iterare", "npm:1.2.1"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.7"],\
@@ -2218,6 +2219,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-treeify-npm-1.0.0-b5e04e9cd3-1b2397030d.zip/node_modules/@types/treeify/",\
           "packageDependencies": [\
             ["@types/treeify", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/validator", [\
+        ["npm:13.7.10", {\
+          "packageLocation": "./.yarn/cache/@types-validator-npm-13.7.10-80d6b32ae6-7b142c0801.zip/node_modules/@types/validator/",\
+          "packageDependencies": [\
+            ["@types/validator", "npm:13.7.10"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -3119,6 +3129,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/eslint-plugin", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:5.45.0"],\
             ["@typescript-eslint/parser", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:5.45.0"],\
             ["@yarnpkg/sdks", "npm:3.0.0-rc.32"],\
+            ["class-validator", "npm:0.14.0"],\
             ["eslint", "npm:8.29.0"],\
             ["eslint-config-prettier", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:8.5.0"],\
             ["eslint-plugin-prettier", "virtual:036f50a00586009027ba0e1bafff640bf1afb978bf066d65b87407392f5f50388e38cd045dc64a972948158e33872b2767189860482ed2f47212568e2589d4d7#npm:4.2.1"],\
@@ -3650,6 +3661,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/cjs-module-lexer-npm-1.2.2-473ce063ea-977f3f042b.zip/node_modules/cjs-module-lexer/",\
           "packageDependencies": [\
             ["cjs-module-lexer", "npm:1.2.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["class-validator", [\
+        ["npm:0.14.0", {\
+          "packageLocation": "./.yarn/cache/class-validator-npm-0.14.0-b600d5fe72-f62e4a0ad2.zip/node_modules/class-validator/",\
+          "packageDependencies": [\
+            ["class-validator", "npm:0.14.0"],\
+            ["@types/validator", "npm:13.7.10"],\
+            ["libphonenumber-js", "npm:1.10.15"],\
+            ["validator", "npm:13.7.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -6568,6 +6591,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["libphonenumber-js", [\
+        ["npm:1.10.15", {\
+          "packageLocation": "./.yarn/cache/libphonenumber-js-npm-1.10.15-42cc8b9186-9428320615.zip/node_modules/libphonenumber-js/",\
+          "packageDependencies": [\
+            ["libphonenumber-js", "npm:1.10.15"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["lines-and-columns", [\
         ["npm:1.2.4", {\
           "packageLocation": "./.yarn/cache/lines-and-columns-npm-1.2.4-d6c7cc5799-0c37f9f7fa.zip/node_modules/lines-and-columns/",\
@@ -9297,6 +9329,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jridgewell/trace-mapping", "npm:0.3.17"],\
             ["@types/istanbul-lib-coverage", "npm:2.0.4"],\
             ["convert-source-map", "npm:1.9.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["validator", [\
+        ["npm:13.7.0", {\
+          "packageLocation": "./.yarn/cache/validator-npm-13.7.0-624277e841-2b83283de1.zip/node_modules/validator/",\
+          "packageDependencies": [\
+            ["validator", "npm:13.7.0"]\
           ],\
           "linkType": "HARD"\
         }]\
