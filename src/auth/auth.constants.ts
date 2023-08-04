@@ -1,3 +1,5 @@
+import { JWT_SECRET_KEY } from '@/environments';
+
 export const jwtConstants = {
-  secret: process.env.JWT_SECRET_KEY,
+  secret: JWT_SECRET_KEY,
 };
