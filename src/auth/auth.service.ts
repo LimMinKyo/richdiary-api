@@ -1,8 +1,8 @@
 import { UsersService } from '@/users/users.service';
+import { comparePassword } from '@/utils/password';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,7 @@ export class AuthService {
       return null;
     }
 
-    const isEqualPassword = await bcrypt.compare(password, user.password);
+    const isEqualPassword = await comparePassword(password, user.password);
 
     if (user && isEqualPassword) {
       return { id: user.id, email: user.email };

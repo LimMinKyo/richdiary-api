@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAccountRequest } from './dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import { hashPassword } from '@/utils/password';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +14,7 @@ export class UsersService {
       throw new BadRequestException('Email already exist.');
     }
 
-    password = await bcrypt.hash(password, 10);
+    password = await hashPassword(password);
 
     await this.prisma.user.create({ data: { email, password } });
     return true;
