@@ -2,10 +2,14 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAccountRequest } from './dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
+import { MailService } from '@/mail/mail.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async createAccount({ email, password }: CreateAccountRequest) {
     const user = await this.findOne(email);
@@ -20,7 +24,14 @@ export class UsersService {
       data: { email, password },
     });
 
-    await this.prisma.verification.create({ data: { userId: newUser.id } });
+    const verification = await this.prisma.verification.create({
+      data: { userId: newUser.id },
+    });
+
+    await this.mailService.sendVerificationEmail(
+      newUser.email,
+      verification.code,
+    );
   }
 
   async findOne(email: string) {
