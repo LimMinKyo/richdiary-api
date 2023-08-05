@@ -1,22 +1,24 @@
-import { Controller, Post, Body, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateAccountRequest } from './dto/create-account.dto';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '@/auth/public.decorator';
 
 @Controller('api/users')
 @ApiTags('유저 API')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: '회원가입' })
+  @Public()
   @Post()
   createAccount(@Body() createAccountRequest: CreateAccountRequest) {
     return this.usersService.createAccount(createAccountRequest);
   }
 
+  @ApiOperation({ summary: '내정보 조회' })
   @ApiBearerAuth('access-token')
-  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Req() req: Request) {
     return req.user;

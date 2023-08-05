@@ -16,8 +16,11 @@ export class UsersService {
 
     password = await hashPassword(password);
 
-    await this.prisma.user.create({ data: { email, password } });
-    return true;
+    const newUser = await this.prisma.user.create({
+      data: { email, password },
+    });
+
+    await this.prisma.verification.create({ data: { userId: newUser.id } });
   }
 
   async findOne(email: string) {
