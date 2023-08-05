@@ -3,6 +3,7 @@ import { CreateAccountRequest } from './dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
+import { VerifyEmailRequest } from './dto/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -44,5 +45,22 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async verifyEmail({ code }: VerifyEmailRequest) {
+    const verification = await this.prisma.verification.findFirst({
+      where: { code },
+      include: { user: true },
+    });
+
+    if (!verification) {
+      throw new BadRequestException('Verification is not found.');
+    }
+
+    await this.prisma.user.update({
+      data: { verified: true },
+      where: { id: verification.userId },
+    });
+    await this.prisma.verification.delete({ where: { id: verification.id } });
   }
 }

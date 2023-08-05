@@ -1,9 +1,10 @@
-import { Controller, Post, Body, Get, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateAccountRequest } from './dto/create-account.dto';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/auth/public.decorator';
+import { VerifyEmailRequest } from './dto/verify-email.dto';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -22,5 +23,11 @@ export class UsersController {
   @Get('profile')
   getProfile(@Req() req: Request) {
     return req.user;
+  }
+
+  @Public()
+  @Patch('verify')
+  verifyEmail(@Body() verifyEmailRequest: VerifyEmailRequest) {
+    return this.usersService.verifyEmail(verifyEmailRequest);
   }
 }
