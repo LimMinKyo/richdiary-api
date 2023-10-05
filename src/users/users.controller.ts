@@ -5,6 +5,7 @@ import { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/auth/public.decorator';
 import { VerifyEmailRequest } from './dto/verify-email.dto';
+import { User } from '@prisma/client';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -21,7 +22,7 @@ export class UsersController {
   @ApiOperation({ summary: '내정보 조회' })
   @ApiBearerAuth('access-token')
   @Get('profile')
-  getProfile(@Req() req: Request) {
+  getProfile(@Req() req: Request & { user: User }) {
     return req.user;
   }
 

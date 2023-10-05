@@ -13,7 +13,7 @@ export class UsersService {
   ) {}
 
   async createAccount({ email, password }: CreateAccountRequest) {
-    const user = await this.findOne(email);
+    const user = await this.findOneByEmail(email);
 
     if (user) {
       throw new BadRequestException('Email already exist.');
@@ -35,9 +35,21 @@ export class UsersService {
     );
   }
 
-  async findOne(email: string) {
+  async findOneByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  }
+
+  async findOneById(id: number) {
+    const user = await this.prisma.user.findFirst({
+      where: { id },
     });
 
     if (!user) {
