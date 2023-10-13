@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { APP_FILTER } from '@nestjs/core';
+import CatchExceptionFilter from './common/filters/catch-exception.filter';
 
 @Module({
   imports: [
@@ -17,5 +19,6 @@ import { AccountsModule } from './accounts/accounts.module';
     MailModule,
     AccountsModule,
   ],
+  providers: [{ provide: APP_FILTER, useClass: CatchExceptionFilter }],
 })
 export class AppModule {}
