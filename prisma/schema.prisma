@@ -9,17 +9,43 @@ datasource db {
 
 model User {
   id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   email        String        @unique
   password     String
   verified     Boolean       @default(false)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
   verification Verification?
+  dividends    Dividend[]
+  accounts     Account[]
 }
 
 model Verification {
-  id     Int    @id @default(autoincrement())
-  code   String @default(uuid())
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int    @unique
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  code      String   @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+}
+
+model Dividend {
+  id             Int      @id @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  dividendAmount Float
+  dividendUnit   String
+  taxAmount      Float
+  taxUnit        String
+  dividendAt     DateTime
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int
 }
