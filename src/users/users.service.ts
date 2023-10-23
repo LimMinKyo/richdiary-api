@@ -12,7 +12,7 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async createAccount({ email, password }: CreateAccountRequest) {
+  async createAccount({ name, email, password }: CreateAccountRequest) {
     const user = await this.findOneByEmail(email);
 
     if (user) {
@@ -22,7 +22,7 @@ export class UsersService {
     password = await hashPassword(password);
 
     const newUser = await this.prisma.user.create({
-      data: { email, password },
+      data: { name, email, password },
     });
 
     const verification = await this.prisma.verification.create({
@@ -57,6 +57,19 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async findOneByEmailOrSave(email: string, name: string, provider: string) {
+    const user = await this.findOneByEmail(email);
+    if (user) {
+      return user;
+    }
+
+    const newUser = await this.prisma.user.create({
+      data: { name, email, provider, verified: true },
+    });
+
+    return newUser;
   }
 
   async verifyEmail({ code }: VerifyEmailRequest) {
