@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { CreateAccountRequest } from './dto/create-account.dto';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '@/auth/public.decorator';
+import { Public } from '@/auth/decorators/public.decorator';
 import { VerifyEmailRequest } from './dto/verify-email.dto';
 import { User } from '@prisma/client';
 

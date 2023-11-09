@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { LocalAuthGuard } from './local-auth.guard';
-import { AuthService } from './auth.service';
-import { Public } from './public.decorator';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { AuthService } from '../services/auth.service';
+import { Public } from '../decorators/public.decorator';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { LoginRequest } from './dtos/login.dto';
-import { KakaoAuthGuard } from './kakao-auth.guard';
-import { RequestWithUser } from './auth.interfaces';
+import { LoginRequest } from '../dtos/login.dto';
+import { KakaoAuthGuard } from '../guards/kakao-auth.guard';
+import { RequestWithUser } from '../auth.interfaces';
 
 @Controller('api/auth')
 @ApiTags('인증 API')

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Put } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountRequest } from './dtos/create-account.dto';
-import { AuthUser } from '@/auth/auth-user.decorator';
+import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import { UpdateAccountRequest } from './dtos/update-account.dto';
 

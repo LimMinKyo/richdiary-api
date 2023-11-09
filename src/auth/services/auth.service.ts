@@ -3,7 +3,7 @@ import { comparePassword } from '@/utils/password';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { JwtPayload, RequestWithUser } from './auth.interfaces';
+import { JwtPayload, RequestWithUser } from '../auth.interfaces';
 import { Response } from 'express';
 
 @Injectable()
