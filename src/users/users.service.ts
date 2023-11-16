@@ -4,6 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
 import { VerifyEmailRequest } from './dto/verify-email.dto';
+import { Provider, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +13,11 @@ export class UsersService {
     private readonly mailService: MailService,
   ) {}
 
-  async createAccount({ name, email, password }: CreateAccountRequest) {
+  async createAccount({
+    name,
+    email,
+    password,
+  }: CreateAccountRequest): Promise<void> {
     const user = await this.findOneByEmail(email);
 
     if (user) {
@@ -22,7 +27,7 @@ export class UsersService {
     password = await hashPassword(password);
 
     const newUser = await this.prisma.user.create({
-      data: { name, email, password },
+      data: { name, email, password, provider: Provider.LOCAL },
     });
 
     const verification = await this.prisma.verification.create({
@@ -35,7 +40,7 @@ export class UsersService {
     );
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
@@ -47,7 +52,7 @@ export class UsersService {
     return user;
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: number): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: { id },
     });
@@ -59,7 +64,15 @@ export class UsersService {
     return user;
   }
 
-  async findOneByEmailOrSave(email: string, name: string, provider: string) {
+  async findOneByEmailOrSave({
+    email,
+    name,
+    provider,
+  }: {
+    email: string;
+    name: string;
+    provider: Provider;
+  }): Promise<User | null> {
     const user = await this.findOneByEmail(email);
     if (user) {
       return user;
@@ -72,7 +85,7 @@ export class UsersService {
     return newUser;
   }
 
-  async verifyEmail({ code }: VerifyEmailRequest) {
+  async verifyEmail({ code }: VerifyEmailRequest): Promise<void> {
     const verification = await this.prisma.verification.findFirst({
       where: { code },
       include: { user: true },

@@ -14,8 +14,7 @@ model User {
   name         String
   email        String        @unique
   password     String?
-  profileImage String?
-  provider     String?
+  provider     Provider
   verified     Boolean       @default(false)
   verification Verification?
   dividends    Dividend[]
@@ -41,14 +40,24 @@ model Account {
 }
 
 model Dividend {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  dividendAmount Float
-  dividendUnit   String
-  taxAmount      Float
-  taxUnit        String
-  dividendAt     DateTime
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         Int
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  dividendAt DateTime
+  name       String
+  unit       Unit
+  dividend   Float
+  tax        Float
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+}
+
+enum Provider {
+  LOCAL
+  KAKAO
+}
+
+enum Unit {
+  KRW
+  USD
 }
