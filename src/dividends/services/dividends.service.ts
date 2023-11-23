@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateDividendRequest,
   CreateDividendResponse,
@@ -15,6 +19,7 @@ import {
 } from '../dto/get-dividends.dto';
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @Injectable()
 export class DividendsService {
@@ -70,11 +75,17 @@ export class DividendsService {
     });
 
     if (!dividend) {
-      return { ok: false, message: '해당 데이터가 존재하지 않습니다.' };
+      throw new NotFoundException({
+        ok: false,
+        message: '해당 데이터가 존재하지 않습니다.',
+      });
     }
 
     if (!this.checkIsOwnDividend(user, dividend)) {
-      return { ok: false, message: '해당 데이터를 삭제할 권한이 없습니다.' };
+      throw new ForbiddenException({
+        ok: false,
+        message: '해당 데이터를 삭제할 권한이 없습니다.',
+      });
     }
 
     const dividendAt = updateDividendRequest.dividendAt
@@ -102,11 +113,17 @@ export class DividendsService {
     });
 
     if (!dividend) {
-      return { ok: false, message: '해당 데이터가 존재하지 않습니다.' };
+      throw new NotFoundException({
+        ok: false,
+        message: '해당 데이터가 존재하지 않습니다.',
+      });
     }
 
     if (!this.checkIsOwnDividend(user, dividend)) {
-      return { ok: false, message: '해당 데이터를 삭제할 권한이 없습니다.' };
+      throw new ForbiddenException({
+        ok: false,
+        message: '해당 데이터를 삭제할 권한이 없습니다.',
+      });
     }
 
     await this.prisma.dividend.delete({

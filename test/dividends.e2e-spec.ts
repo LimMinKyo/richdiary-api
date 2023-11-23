@@ -12,7 +12,9 @@ describe('DividendController (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: User;
+  let otherUser: User;
   let accessToken: string;
+  let otherAccessToken: string;
   const dividendShape: Omit<Dividend, 'userId'> = expect.objectContaining({
     id: expect.any(Number),
     createdAt: expect.any(String),
@@ -51,7 +53,16 @@ describe('DividendController (e2e)', () => {
       },
     });
 
+    otherUser = await prisma.user.create({
+      data: {
+        name: '김철수',
+        email: 'test1@test.com',
+        provider: 'LOCAL',
+      },
+    });
+
     accessToken = jwtService.sign({ id: user.id });
+    otherAccessToken = jwtService.sign({ id: otherUser.id });
   });
 
   afterAll(async () => {
@@ -117,20 +128,52 @@ describe('DividendController (e2e)', () => {
     });
   });
 
-  it('/api/dividends/:id (DELETE)', async () => {
-    const [dividend] = await prisma.dividend.findMany();
+  describe('/api/dividends/:id (DELETE)', () => {
+    it('Forbidden (403)', async () => {
+      const [dividend] = await prisma.dividend.findMany();
 
-    const { status, body } = await request(app.getHttpServer())
-      .delete(`/api/dividends/${dividend.id}`)
-      .auth(accessToken, { type: 'bearer' });
+      const { status, body } = await request(app.getHttpServer())
+        .delete(`/api/dividends/${dividend.id}`)
+        .auth(otherAccessToken, { type: 'bearer' });
 
-    const count = await prisma.dividend.count();
+      const count = await prisma.dividend.count();
 
-    expect(status).toBe(200);
-    expect(body).toEqual({
-      ok: true,
+      expect(status).toBe(403);
+      expect(body).toEqual({
+        ok: false,
+        message: '해당 데이터를 삭제할 권한이 없습니다.',
+      });
+
+      expect(count).toBe(1);
     });
 
-    expect(count).toBe(0);
+    it('Not Found (404)', async () => {
+      const { status, body } = await request(app.getHttpServer())
+        .delete(`/api/dividends/${999}`)
+        .auth(accessToken, { type: 'bearer' });
+
+      expect(status).toBe(404);
+      expect(body).toEqual({
+        ok: false,
+        message: '해당 데이터가 존재하지 않습니다.',
+      });
+    });
+
+    it('Success (200)', async () => {
+      const [dividend] = await prisma.dividend.findMany();
+
+      const { status, body } = await request(app.getHttpServer())
+        .delete(`/api/dividends/${dividend.id}`)
+        .auth(accessToken, { type: 'bearer' });
+
+      const count = await prisma.dividend.count();
+
+      expect(status).toBe(200);
+      expect(body).toEqual({
+        ok: true,
+      });
+
+      expect(count).toBe(0);
+    });
   });
 });

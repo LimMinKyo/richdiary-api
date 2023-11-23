@@ -4,4 +4,4 @@ import { ResponseDto } from '@/common/dtos/response.dto';
 
 export class UpdateDividendRequest extends PartialType(CreateDividendRequest) {}
 
-export interface UpdateDividendResponse extends ResponseDto {}
+export class UpdateDividendResponse extends ResponseDto {}
