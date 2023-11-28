@@ -22,8 +22,8 @@ export class UsersController {
   @ApiOperation({ summary: '내정보 조회' })
   @ApiBearerAuth('access-token')
   @Get('profile')
-  getProfile(@Req() req: Request & { user: User }) {
-    return req.user;
+  getMyProfile(@Req() req: Request & { user: User }) {
+    return this.usersService.getMyProfile(req.user);
   }
 
   @Public()

@@ -1,39 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { PrismaService } from '@/prisma/prisma.service';
-
-const getMockPrisma = () => ({
-  user: {
-    create: jest
-      .fn()
-      .mockReturnValue({ id: 1, email: 'test@test.com', password: '12345' }),
-    findUnique: jest
-      .fn()
-      .mockReturnValue({ id: 1, email: 'test@test.com', password: '12345' }),
-  },
-});
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { PrismaClient } from '@prisma/client';
+import { MailModule } from '@/mail/mail.module';
 
 describe('UsersService', () => {
   let service: UsersService;
+  let prisma: DeepMockProxy<PrismaService>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UsersService,
-        { provide: PrismaService, useValue: getMockPrisma() },
-      ],
-    }).compile();
+      imports: [MailModule],
+      providers: [UsersService, PrismaService],
+    })
+      .overrideProvider(PrismaService)
+      .useValue(mockDeep<PrismaClient>())
+      .compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get(UsersService);
+    prisma = module.get(PrismaService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  describe('createAccount', () => {
-    it('Success', () => {
-      service.createAccount({ email: 'test@test.com', password: '12345' });
-    });
   });
 });

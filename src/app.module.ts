@@ -17,8 +17,8 @@ import Joi from 'joi';
         process.env.NODE_ENV === 'development'
           ? '.env.development'
           : process.env.NODE_ENV === 'production'
-          ? '.env'
-          : '.env.test',
+            ? '.env'
+            : '.env.test',
       ignoreEnvFile: process.env.NODE_ENV === 'production',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()

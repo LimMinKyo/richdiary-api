@@ -40,6 +40,10 @@ export class UsersService {
     );
   }
 
+  getMyProfile({ password, id, ...rest }: User) {
+    return rest;
+  }
+
   async findOneByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
