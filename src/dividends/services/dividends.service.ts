@@ -84,7 +84,7 @@ export class DividendsService {
     if (!this.checkIsOwnDividend(user, dividend)) {
       throw new ForbiddenException({
         ok: false,
-        message: '해당 데이터를 삭제할 권한이 없습니다.',
+        message: '해당 데이터를 변경할 권한이 없습니다.',
       });
     }
 

@@ -72,59 +72,91 @@ describe('DividendController (e2e)', () => {
     await app.close();
   });
 
-  it('/api/dividends (POST)', async () => {
-    const { status, body } = await request(app.getHttpServer())
-      .post('/api/dividends')
-      .auth(accessToken, { type: 'bearer' })
-      .send(createDividendRequest);
+  describe('/api/dividends (POST)', () => {
+    it('Created (201)', async () => {
+      const { status, body } = await request(app.getHttpServer())
+        .post('/api/dividends')
+        .auth(accessToken, { type: 'bearer' })
+        .send(createDividendRequest);
 
-    expect(status).toBe(201);
-    expect(body).toEqual({
-      ok: true,
+      expect(status).toBe(201);
+      expect(body).toEqual({
+        ok: true,
+      });
     });
   });
 
-  it('/api/dividends (GET)', async () => {
-    const { status, body } = await request(app.getHttpServer())
-      .get('/api/dividends')
-      .auth(accessToken, { type: 'bearer' });
+  describe('/api/dividends (GET)', () => {
+    it('Success (200)', async () => {
+      const { status, body } = await request(app.getHttpServer())
+        .get('/api/dividends')
+        .auth(accessToken, { type: 'bearer' });
 
-    expect(status).toBe(200);
-    expect(body).toEqual({
-      ok: true,
-      data: expect.arrayContaining([dividendShape]),
+      expect(status).toBe(200);
+      expect(body).toEqual({
+        ok: true,
+        data: expect.arrayContaining([dividendShape]),
+      });
     });
   });
 
-  it('/api/dividends/:id (PATCH)', async () => {
-    const [dividend] = await prisma.dividend.findMany();
-    const dividendId = dividend.id;
-    const updateDividendRequest: UpdateDividendRequest = {
-      name: 'APPL',
-      dividend: 100,
-      tax: 2,
-      dividendAt: '2023-11-01',
-      unit: 'USD',
-    };
+  describe('/api/dividends/:id (PATCH)', () => {
+    it('Forbidden (403)', async () => {
+      const [dividend] = await prisma.dividend.findMany();
 
-    const { status, body } = await request(app.getHttpServer())
-      .patch(`/api/dividends/${dividendId}`)
-      .auth(accessToken, { type: 'bearer' })
-      .send(updateDividendRequest);
+      const { status, body } = await request(app.getHttpServer())
+        .patch(`/api/dividends/${dividend.id}`)
+        .auth(otherAccessToken, { type: 'bearer' });
 
-    expect(status).toBe(200);
-    expect(body).toEqual({
-      ok: true,
+      expect(status).toBe(403);
+      expect(body).toEqual({
+        ok: false,
+        message: '해당 데이터를 변경할 권한이 없습니다.',
+      });
     });
 
-    const updatedDividend = await prisma.dividend.findFirst({
-      where: { id: dividendId },
+    it('Not Found (404)', async () => {
+      const { status, body } = await request(app.getHttpServer())
+        .patch(`/api/dividends/${999}`)
+        .auth(accessToken, { type: 'bearer' });
+
+      expect(status).toBe(404);
+      expect(body).toEqual({
+        ok: false,
+        message: '해당 데이터가 존재하지 않습니다.',
+      });
     });
-    expect(updatedDividend).toEqual({
-      ...dividend,
-      ...updateDividendRequest,
-      updatedAt: expect.any(Date),
-      dividendAt: new Date(new Date('2023-11-01').toISOString()),
+
+    it('Success (200)', async () => {
+      const [dividend] = await prisma.dividend.findMany();
+      const dividendId = dividend.id;
+      const updateDividendRequest: UpdateDividendRequest = {
+        name: 'APPL',
+        dividend: 100,
+        tax: 2,
+        dividendAt: '2023-11-01',
+        unit: 'USD',
+      };
+
+      const { status, body } = await request(app.getHttpServer())
+        .patch(`/api/dividends/${dividendId}`)
+        .auth(accessToken, { type: 'bearer' })
+        .send(updateDividendRequest);
+
+      expect(status).toBe(200);
+      expect(body).toEqual({
+        ok: true,
+      });
+
+      const updatedDividend = await prisma.dividend.findFirst({
+        where: { id: dividendId },
+      });
+      expect(updatedDividend).toEqual({
+        ...dividend,
+        ...updateDividendRequest,
+        updatedAt: expect.any(Date),
+        dividendAt: new Date(new Date('2023-11-01').toISOString()),
+      });
     });
   });
 
