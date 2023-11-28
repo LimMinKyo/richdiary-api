@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
+import { UsersService } from '../services/users.service';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { MailModule } from '@/mail/mail.module';
 

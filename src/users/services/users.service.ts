@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateAccountRequest } from './dto/create-account.dto';
+import { CreateAccountRequest } from '../dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
-import { VerifyEmailRequest } from './dto/verify-email.dto';
+import { VerifyEmailRequest } from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
 
 @Injectable()

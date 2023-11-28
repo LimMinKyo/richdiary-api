@@ -1,10 +1,10 @@
 import { Controller, Post, Body, Get, Req, Patch } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateAccountRequest } from './dto/create-account.dto';
+import { UsersService } from '../services/users.service';
+import { CreateAccountRequest } from '../dto/create-account.dto';
 import { Request } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/auth/decorators/public.decorator';
-import { VerifyEmailRequest } from './dto/verify-email.dto';
+import { VerifyEmailRequest } from '../dto/verify-email.dto';
 import { User } from '@prisma/client';
 
 @Controller('api/users')
