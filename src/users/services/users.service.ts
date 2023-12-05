@@ -1,10 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateAccountRequest } from '../dto/create-account.dto';
+import {
+  CreateAccountRequest,
+  CreateAccountResponse,
+} from '../dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
-import { VerifyEmailRequest } from '../dto/verify-email.dto';
+import {
+  VerifyEmailRequest,
+  VerifyEmailResponse,
+} from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
+import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,11 +24,14 @@ export class UsersService {
     name,
     email,
     password,
-  }: CreateAccountRequest): Promise<void> {
+  }: CreateAccountRequest): Promise<CreateAccountResponse> {
     const user = await this.findOneByEmail(email);
 
     if (user) {
-      throw new BadRequestException('Email already exist.');
+      throw new BadRequestException({
+        ok: false,
+        message: '해당 이메일은 이미 존재합니다.',
+      });
     }
 
     password = await hashPassword(password);
@@ -38,10 +48,17 @@ export class UsersService {
       newUser.email,
       verification.code,
     );
+
+    return {
+      ok: true,
+    };
   }
 
-  getMyProfile({ password, id, ...rest }: User) {
-    return rest;
+  getMyProfile({ password, id, ...rest }: User): GetMyProfileResponse {
+    return {
+      ok: true,
+      data: rest,
+    };
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -78,6 +95,7 @@ export class UsersService {
     provider: Provider;
   }): Promise<User | null> {
     const user = await this.findOneByEmail(email);
+
     if (user) {
       return user;
     }
@@ -89,20 +107,30 @@ export class UsersService {
     return newUser;
   }
 
-  async verifyEmail({ code }: VerifyEmailRequest): Promise<void> {
+  async verifyEmail({
+    code,
+  }: VerifyEmailRequest): Promise<VerifyEmailResponse> {
     const verification = await this.prisma.verification.findFirst({
       where: { code },
       include: { user: true },
     });
 
     if (!verification) {
-      throw new BadRequestException('Verification is not found.');
+      throw new BadRequestException({
+        ok: false,
+        message: '인증코드가 유효하지 않습니다.',
+      });
     }
 
     await this.prisma.user.update({
       data: { verified: true },
       where: { id: verification.userId },
     });
+
     await this.prisma.verification.delete({ where: { id: verification.id } });
+
+    return {
+      ok: true,
+    };
   }
 }

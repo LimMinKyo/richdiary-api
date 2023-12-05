@@ -4,7 +4,7 @@ import { DividendEntity } from '../entities/dividend.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetDividendsRequest {
-  @ApiProperty({ description: 'YYYY-MM-DD', example: '2023-11-24' })
+  @ApiProperty({ description: 'YYYY-MM', example: '2023-11' })
   @IsDateString()
   @IsNotEmpty()
   date!: string;
