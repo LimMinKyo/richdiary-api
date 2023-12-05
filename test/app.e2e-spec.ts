@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -43,6 +43,8 @@ describe('DividendController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
+
     prisma = app.get(PrismaService);
     const jwtService = app.get(JwtService);
 
@@ -223,6 +225,7 @@ describe('UsersController (e2e)', () => {
   let prisma: PrismaService;
   let user: User;
   let accessToken: string;
+  let jwtService: JwtService;
 
   const mockMailService = () => ({
     sendVerificationEmail: jest.fn(),
@@ -243,20 +246,12 @@ describe('UsersController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
+
     prisma = app.get(PrismaService);
-    const jwtService = app.get(JwtService);
+    jwtService = app.get(JwtService);
 
     await app.init();
-
-    user = await prisma.user.create({
-      data: {
-        name: '김철수',
-        email: 'users1@test.com',
-        provider: 'LOCAL',
-      },
-    });
-
-    accessToken = jwtService.sign({ id: user.id });
   });
 
   afterAll(async () => {
@@ -277,9 +272,14 @@ describe('UsersController (e2e)', () => {
         ok: true,
       });
 
+      const [newUser] = await prisma.user.findMany();
+
+      user = newUser;
+      accessToken = jwtService.sign({ id: newUser.id });
+
       const count = await prisma.user.count();
 
-      expect(count).toBe(2);
+      expect(count).toBe(1);
     });
   });
 
