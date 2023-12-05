@@ -46,7 +46,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload);
       const frontUrl = this.configService.get('FRONT_URL');
       return res.redirect(
-        `${frontUrl}/login/kakao?access-token=${accessToken}`,
+        `${frontUrl}/login/oauth?access-token=${accessToken}`,
       );
     }
   }
