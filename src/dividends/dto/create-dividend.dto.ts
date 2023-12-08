@@ -9,6 +9,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { DividendEntity } from '../entities/dividend.entity';
 
 export class CreateDividendRequest {
   @ApiProperty({ description: '배당일' })
@@ -35,4 +36,4 @@ export class CreateDividendRequest {
   tax?: number;
 }
 
-export class CreateDividendResponse extends ResponseDto {}
+export class CreateDividendResponse extends ResponseDto<DividendEntity> {}

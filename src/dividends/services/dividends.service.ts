@@ -29,7 +29,7 @@ export class DividendsService {
     user: User,
     createDividendRequest: CreateDividendRequest,
   ): Promise<CreateDividendResponse> {
-    await this.prisma.dividend.create({
+    const { userId, ...rest } = await this.prisma.dividend.create({
       data: {
         ...createDividendRequest,
         dividendAt: dayjs(createDividendRequest.dividendAt).toISOString(),
@@ -40,6 +40,7 @@ export class DividendsService {
 
     return {
       ok: true,
+      data: rest,
     };
   }
 

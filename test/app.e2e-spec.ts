@@ -87,6 +87,7 @@ describe('DividendController (e2e)', () => {
       expect(status).toBe(201);
       expect(body).toEqual({
         ok: true,
+        data: dividendShape,
       });
     });
   });
