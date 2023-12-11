@@ -1,8 +1,18 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import pagination from 'prisma-extension-pagination';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+  readonly paginator = this.$extends(
+    pagination({
+      pages: {
+        limit: 10,
+        includePageCount: true,
+      },
+    }),
+  );
+
   async onModuleInit() {
     await this.$connect();
   }

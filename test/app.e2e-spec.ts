@@ -1,3 +1,4 @@
+import 'jest-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -10,6 +11,18 @@ import { UpdateDividendRequest } from '@/dividends/dto/update-dividend.dto';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
 import { MailService } from '@/mail/mail.service';
 import { GetDividendsRequest } from '@/dividends/dto/get-dividends.dto';
+import { PaginationMeta } from '@/common/dtos/pagination.dto';
+
+const paginationMetaShape = expect.objectContaining<PaginationMeta>({
+  isFirstPage: expect.any(Boolean),
+  isLastPage: expect.any(Boolean),
+  currentPage: expect.any(Number),
+  previousPage: expect.toBeOneOf([expect.any(Number), null]),
+  nextPage: expect.toBeOneOf([expect.any(Number), null]),
+  pageCount: expect.any(Number),
+  totalCount: expect.any(Number),
+  perPage: expect.any(Number),
+});
 
 describe('DividendController (e2e)', () => {
   let app: INestApplication;
@@ -43,7 +56,14 @@ describe('DividendController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    );
 
     prisma = app.get(PrismaService);
     const jwtService = app.get(JwtService);
@@ -87,7 +107,6 @@ describe('DividendController (e2e)', () => {
       expect(status).toBe(201);
       expect(body).toEqual({
         ok: true,
-        data: dividendShape,
       });
     });
   });
@@ -107,6 +126,7 @@ describe('DividendController (e2e)', () => {
       expect(body).toEqual({
         ok: true,
         data: expect.arrayContaining([dividendShape]),
+        meta: paginationMetaShape,
       });
     });
   });
@@ -247,7 +267,14 @@ describe('UsersController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    );
 
     prisma = app.get(PrismaService);
     jwtService = app.get(JwtService);

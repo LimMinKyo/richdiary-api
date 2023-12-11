@@ -19,7 +19,6 @@ import {
 } from '../dto/get-dividends.dto';
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
-import { ResponseDto } from '@/common/dtos/response.dto';
 
 @Injectable()
 export class DividendsService {
@@ -29,7 +28,7 @@ export class DividendsService {
     user: User,
     createDividendRequest: CreateDividendRequest,
   ): Promise<CreateDividendResponse> {
-    const { userId, ...rest } = await this.prisma.dividend.create({
+    await this.prisma.dividend.create({
       data: {
         ...createDividendRequest,
         dividendAt: dayjs(createDividendRequest.dividendAt).toISOString(),
@@ -40,30 +39,41 @@ export class DividendsService {
 
     return {
       ok: true,
-      data: rest,
     };
   }
 
   async getDividends(
     user: User,
-    { date }: GetDividendsRequest,
+    { date, page = 1, perPage = 10 }: GetDividendsRequest,
   ): Promise<GetDividendsResponse> {
-    const result = await this.prisma.dividend.findMany({
-      where: {
-        userId: user.id,
-        dividendAt: {
-          gte: dayjs(date).startOf('month').toISOString(),
-          lte: dayjs(date).endOf('month').toISOString(),
+    const [result, meta] = await this.prisma.paginator.dividend
+      .paginate({
+        where: {
+          userId: user.id,
+          dividendAt: {
+            gte: dayjs(date).startOf('month').toISOString(),
+            lte: dayjs(date).endOf('month').toISOString(),
+          },
         },
-      },
-      orderBy: {
-        dividendAt: 'asc',
-      },
-    });
+        orderBy: {
+          dividendAt: 'asc',
+        },
+      })
+      .withPages({
+        page,
+        limit: perPage,
+      });
 
     const data = result.map(({ userId, ...rest }) => rest);
 
-    return { ok: true, data };
+    return {
+      ok: true,
+      data,
+      meta: {
+        ...meta,
+        perPage,
+      },
+    };
   }
 
   async updateDividend(

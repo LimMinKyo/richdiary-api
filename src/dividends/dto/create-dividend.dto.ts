@@ -36,4 +36,4 @@ export class CreateDividendRequest {
   tax?: number;
 }
 
-export class CreateDividendResponse extends ResponseDto<DividendEntity> {}
+export class CreateDividendResponse extends ResponseDto {}
