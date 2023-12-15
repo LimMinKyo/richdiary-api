@@ -1,4 +1,4 @@
-# Asman (Backend)
+# 부자일기 (Backend)
 
 - 기술스택: Nest.js, Typescript, Prisma, Jest, PostgreSQL, Swagger
 - ExceptionFilter를 이용하여 전역으로 에러 처리
