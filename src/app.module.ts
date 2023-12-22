@@ -8,6 +8,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { DividendsModule } from './dividends/dividends.module';
 import CatchExceptionFilter from './common/filters/catch-exception.filter';
 import Joi from 'joi';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import Joi from 'joi';
     MailModule,
     DividendsModule,
   ],
+  controllers: [AppController],
   providers: [{ provide: APP_FILTER, useClass: CatchExceptionFilter }],
 })
 export class AppModule {}
