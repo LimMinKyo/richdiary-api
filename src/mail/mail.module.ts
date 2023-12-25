@@ -2,7 +2,6 @@ import { Global, Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 // import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
-import { MAIL_PASS, MAIL_USER } from '@/environments';
 
 @Global()
 @Module({
@@ -12,8 +11,8 @@ import { MAIL_PASS, MAIL_USER } from '@/environments';
         host: 'smtp.gmail.com',
         port: 587,
         auth: {
-          user: MAIL_USER,
-          pass: MAIL_PASS,
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
         },
         tls: {
           rejectUnauthorized: false,
