@@ -56,14 +56,6 @@ describe('DividendController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: {
-          enableImplicitConversion: true,
-        },
-      }),
-    );
 
     prisma = app.get(PrismaService);
     const jwtService = app.get(JwtService);
@@ -267,14 +259,6 @@ describe('UsersController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        transformOptions: {
-          enableImplicitConversion: true,
-        },
-      }),
-    );
 
     prisma = app.get(PrismaService);
     jwtService = app.get(JwtService);
