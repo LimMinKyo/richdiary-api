@@ -7,9 +7,7 @@ import {
 import { ResponseDto } from '../dtos/response.dto';
 
 @Catch()
-export default class CatchExceptionFilter
-  implements ExceptionFilter<HttpException>
-{
+export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();

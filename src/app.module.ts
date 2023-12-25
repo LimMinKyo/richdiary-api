@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { APP_FILTER } from '@nestjs/core';
 import { DividendsModule } from './dividends/dividends.module';
-import CatchExceptionFilter from './common/filters/catch-exception.filter';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import Joi from 'joi';
 import { AppController } from './app.controller';
 
@@ -41,6 +41,6 @@ import { AppController } from './app.controller';
     DividendsModule,
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_FILTER, useClass: CatchExceptionFilter }],
+  providers: [{ provide: APP_FILTER, useClass: GlobalExceptionFilter }],
 })
 export class AppModule {}
