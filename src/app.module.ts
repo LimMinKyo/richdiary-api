@@ -26,6 +26,7 @@ import { GlobalValidationPipe } from './common/pipes/global-validation-pipe.pipe
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .required(),
+        FRONT_URL: Joi.string().required(),
         DATABASE_URL: Joi.string().required(),
         JWT_SECRET_KEY: Joi.string().required(),
         MAIL_USER: Joi.string().required(),

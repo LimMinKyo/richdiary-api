@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Asman API')
-    .setDescription('Asman API Docs')
+    .setTitle('부자일기 API')
+    .setDescription('부자일기 API Docs')
     .setVersion('1.0')
     //JWT 토큰 설정
     .addBearerAuth(
