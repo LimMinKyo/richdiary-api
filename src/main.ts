@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SWAGGER_AUTH_TOKEN_KEY } from './common/common.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +18,7 @@ async function bootstrap() {
         name: 'JWT',
         in: 'header',
       },
-      'access-token',
+      SWAGGER_AUTH_TOKEN_KEY,
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);

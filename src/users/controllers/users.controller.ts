@@ -5,7 +5,7 @@ import {
   CreateAccountResponse,
 } from '../dto/create-account.dto';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '@/auth/decorators/public.decorator';
 import {
   VerifyEmailRequest,
@@ -13,6 +13,7 @@ import {
 } from '../dto/verify-email.dto';
 import { User } from '@prisma/client';
 import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
+import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -29,7 +30,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: '내정보 조회' })
-  @ApiBearerAuth('access-token')
+  @ApiAuthRequired()
   @Get('profile')
   getMyProfile(@Req() req: Request & { user: User }): GetMyProfileResponse {
     return this.usersService.getMyProfile(req.user);

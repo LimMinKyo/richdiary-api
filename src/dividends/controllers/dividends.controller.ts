@@ -25,7 +25,6 @@ import {
 } from '../dto/get-dividends.dto';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import {
-  ApiBearerAuth,
   ApiCreatedResponse,
   ApiExtraModels,
   ApiForbiddenResponse,
@@ -37,9 +36,10 @@ import {
 } from '@nestjs/swagger';
 import { DividendEntity } from '../entities/dividend.entity';
 import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
+import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
 
+@ApiAuthRequired()
 @ApiTags('배당일지 API')
-@ApiBearerAuth('access-token')
 @Controller('api/dividends')
 export class DividendsController {
   constructor(private readonly dividendsService: DividendsService) {}
