@@ -3,8 +3,14 @@ import { Response } from 'express';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthService } from '../services/auth.service';
 import { Public } from '../decorators/public.decorator';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { LoginRequest } from '../dtos/login.dto';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
+import { LoginRequest, LoginResponse } from '../dtos/login.dto';
 import { KakaoAuthGuard } from '../guards/kakao-auth.guard';
 import { RequestWithUser } from '../auth.interfaces';
 
@@ -14,14 +20,27 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @ApiOperation({ summary: '일반 로그인' })
+  @ApiOkResponse({
+    schema: {
+      allOf: [{ $ref: getSchemaPath(LoginResponse) }],
+      example: {
+        ok: true,
+        data: {
+          access_token: 'ACCESS_TOKEN',
+        },
+      },
+    },
+  })
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequest })
   @Post('login')
-  async login(@Req() req: RequestWithUser) {
+  async login(@Req() req: RequestWithUser): Promise<LoginResponse> {
     return await this.authService.login(req.user);
   }
 
   @Public()
+  @ApiOperation({ summary: '카카오 SSO 로그인' })
   @UseGuards(KakaoAuthGuard)
   @Get('login/kakao')
   async loginKakao(@Req() req: RequestWithUser, @Res() res: Response) {

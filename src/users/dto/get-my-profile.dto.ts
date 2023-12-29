@@ -1,6 +1,4 @@
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { User } from '@prisma/client';
+import { UserEntity } from '../entities/user.entity';
 
-export class GetMyProfileResponse extends ResponseDto<
-  Omit<User, 'id' | 'password'>
-> {}
+export class GetMyProfileResponse extends ResponseDto<UserEntity> {}
