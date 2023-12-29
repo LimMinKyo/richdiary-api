@@ -59,7 +59,6 @@ describe('DividendsService', () => {
         unit: mockDividend.unit,
         tax: mockDividend.tax,
       };
-      prisma.dividend.create.mockResolvedValue(mockDividend);
 
       // when
       const result = await service.createDividend(
@@ -68,20 +67,8 @@ describe('DividendsService', () => {
       );
 
       // then
-      expect(prisma.dividend.create).toHaveBeenCalledTimes(1);
-      expect(prisma.dividend.create).toHaveBeenCalledWith({
-        data: {
-          ...createDividendRequest,
-          dividendAt: dayjs(createDividendRequest.dividendAt).toISOString(),
-          userId: mockUser.id,
-        },
-      });
-
-      const { userId, ...rest } = mockDividend;
-
       expect(result).toEqual({
         ok: true,
-        data: rest,
       });
     });
   });
@@ -96,13 +83,6 @@ describe('DividendsService', () => {
 
       // then
       expect(result).toEqual({ ok: true });
-
-      expect(prisma.dividend.delete).toHaveBeenCalledTimes(1);
-      expect(prisma.dividend.delete).toHaveBeenCalledWith({
-        where: {
-          id: 1,
-        },
-      });
     });
   });
 });

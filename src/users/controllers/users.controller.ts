@@ -8,11 +8,9 @@ import { Request } from 'express';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
-  ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  getSchemaPath,
 } from '@nestjs/swagger';
 import { Public } from '@/auth/decorators/public.decorator';
 import {
@@ -22,7 +20,6 @@ import {
 import { User } from '@prisma/client';
 import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
-import { UserEntity } from '../entities/user.entity';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -34,7 +31,6 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({
     schema: {
-      allOf: [{ $ref: getSchemaPath(CreateAccountResponse) }],
       example: {
         ok: true,
       },
@@ -42,7 +38,6 @@ export class UsersController {
   })
   @ApiBadRequestResponse({
     schema: {
-      allOf: [{ $ref: getSchemaPath(CreateAccountResponse) }],
       example: {
         ok: false,
         message: '해당 이메일은 이미 존재합니다.',
@@ -57,24 +52,8 @@ export class UsersController {
 
   @ApiOperation({ summary: '내정보 조회' })
   @ApiAuthRequired()
-  @ApiExtraModels(GetMyProfileResponse, UserEntity)
   @ApiOkResponse({
-    schema: {
-      allOf: [
-        { $ref: getSchemaPath(GetMyProfileResponse) },
-        {
-          properties: {
-            ok: {
-              type: 'boolean',
-              example: true,
-            },
-            data: {
-              $ref: getSchemaPath(UserEntity),
-            },
-          },
-        },
-      ],
-    },
+    type: GetMyProfileResponse,
   })
   @Get('profile')
   getMyProfile(@Req() req: Request & { user: User }): GetMyProfileResponse {
@@ -86,7 +65,6 @@ export class UsersController {
   @Patch('verify')
   @ApiOkResponse({
     schema: {
-      allOf: [{ $ref: getSchemaPath(VerifyEmailResponse) }],
       example: {
         ok: true,
       },
@@ -94,7 +72,6 @@ export class UsersController {
   })
   @ApiBadRequestResponse({
     schema: {
-      allOf: [{ $ref: getSchemaPath(VerifyEmailResponse) }],
       example: {
         ok: false,
         message: '인증코드가 유효하지 않습니다.',

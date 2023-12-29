@@ -23,7 +23,6 @@ export class AuthController {
   @ApiOperation({ summary: '일반 로그인' })
   @ApiOkResponse({
     schema: {
-      allOf: [{ $ref: getSchemaPath(LoginResponse) }],
       example: {
         ok: true,
         data: {

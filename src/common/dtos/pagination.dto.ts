@@ -50,6 +50,6 @@ export class PaginationResponse<T> extends ResponseDto<T[]> {
   @ApiProperty()
   data!: T[];
 
-  @ApiProperty()
+  @ApiProperty({ type: PaginationMeta })
   meta!: PaginationMeta;
 }
