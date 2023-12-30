@@ -1,4 +1,4 @@
-import { DB } from '../../kysely/types';
+import { DB } from '@/db/types';
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
 import parseDatabaseUrl from 'ts-parse-database-url';

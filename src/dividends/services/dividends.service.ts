@@ -20,7 +20,7 @@ import {
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
-import { DB } from 'kysely/types';
+import { DB } from '@/db/types';
 import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
 import { db } from '@/utils/db';
 
@@ -170,7 +170,7 @@ export class DividendsService {
       ])
       .where((eb) => eb('userId', '=', user.id))
       .groupBy([({ ref }) => getYearMonth(ref('dividendAt')), 'unit'])
-      .orderBy(({ ref }) => getYearMonth(ref('dividendAt')))
+      .orderBy([({ ref }) => getYearMonth(ref('dividendAt')), 'unit'])
       .execute();
 
     return { ok: true, data };

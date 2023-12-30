@@ -1,6 +1,6 @@
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Unit } from 'kysely/enums';
+import { Unit } from '@/db/enums';
 
 class StatisticsData {
   @ApiProperty({ enum: Unit })
