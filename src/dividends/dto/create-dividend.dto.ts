@@ -9,7 +9,6 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { DividendEntity } from '../entities/dividend.entity';
 
 export class CreateDividendRequest {
   @ApiProperty({ description: '배당일' })

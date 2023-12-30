@@ -19,6 +19,10 @@ import {
 } from '../dto/get-dividends.dto';
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
+import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
+import { DB } from 'kysely/types';
+import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
+import { db } from '@/utils/db';
 
 @Injectable()
 export class DividendsService {
@@ -144,6 +148,32 @@ export class DividendsService {
     });
 
     return { ok: true };
+  }
+
+  async getDividendsStatistics(
+    user: User,
+  ): Promise<GetDividendsStatisticsResponse> {
+    const getYearMonth = (
+      ref: ExpressionWrapper<DB, 'Dividend', Date>,
+    ): RawBuilder<string> => {
+      return sql`TO_CHAR(${ref}, 'YYYY-MM')`;
+    };
+
+    const data = await db
+      .selectFrom('Dividend')
+      .select([
+        ({ ref }) => getYearMonth(ref('dividendAt')).as('date'),
+        ({ fn, eb }) => eb(fn.sum('dividend'), '-', fn.sum('tax')).as('total'),
+        ({ fn }) => fn.sum('dividend').as('dividend'),
+        ({ fn }) => fn.sum('tax').as('tax'),
+        'unit',
+      ])
+      .where((eb) => eb('userId', '=', user.id))
+      .groupBy([({ ref }) => getYearMonth(ref('dividendAt')), 'unit'])
+      .orderBy(({ ref }) => getYearMonth(ref('dividendAt')))
+      .execute();
+
+    return { ok: true, data };
   }
 
   private checkIsOwnDividend(user: User, dividend: Dividend) {

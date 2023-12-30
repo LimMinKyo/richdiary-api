@@ -43,8 +43,8 @@ lerna-debug.log*
 !.yarn/versions
 .pnp.*
 
-# db
-/db
+# kysely
+kysely/*
 
 # .env
 .env

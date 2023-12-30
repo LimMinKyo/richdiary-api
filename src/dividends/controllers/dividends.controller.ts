@@ -37,6 +37,7 @@ import {
 import { DividendEntity } from '../entities/dividend.entity';
 import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
+import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
 
 @ApiAuthRequired()
 @ApiTags('배당일지 API')
@@ -149,5 +150,14 @@ export class DividendsController {
     @Param('id') id: string,
   ): Promise<DeleteDividendResponse> {
     return this.dividendsService.deleteDividend(user, +id);
+  }
+
+  @Get('/statistics')
+  @ApiOperation({ summary: '배당일지 통계' })
+  @ApiOkResponse({ type: GetDividendsStatisticsResponse })
+  async getDividendsStatistics(
+    @AuthUser() user: User,
+  ): Promise<GetDividendsStatisticsResponse> {
+    return this.dividendsService.getDividendsStatistics(user);
   }
 }
