@@ -3,9 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Unit } from '@/db/enums';
 
 class StatisticsData {
-  @ApiProperty({ enum: Unit })
-  unit!: Unit;
-
   @ApiProperty({ example: '2023-12' })
   date!: string;
 

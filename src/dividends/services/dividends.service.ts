@@ -23,6 +23,7 @@ import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
 import { DB } from '@/db/types';
 import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
 import { db } from '@/utils/db';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class DividendsService {
@@ -159,19 +160,68 @@ export class DividendsService {
       return sql`TO_CHAR(${ref}, 'YYYY-MM')`;
     };
 
-    const data = await db
+    const exchangeData = await (
+      await fetch(
+        'https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/krw.min.json',
+      )
+    ).json();
+    const krwExchangeRate = +exchangeData.krw.toFixed(2);
+
+    const result = await db
       .selectFrom('Dividend')
       .select([
         ({ ref }) => getYearMonth(ref('dividendAt')).as('date'),
-        ({ fn, eb }) => eb(fn.sum('dividend'), '-', fn.sum('tax')).as('total'),
-        ({ fn }) => fn.sum('dividend').as('dividend'),
-        ({ fn }) => fn.sum('tax').as('tax'),
-        'unit',
+        ({ fn, eb, ref }) =>
+          fn
+            .sum(
+              eb
+                .case()
+                .when('unit', '=', 'USD')
+                .then(
+                  eb(
+                    eb('dividend', '*', krwExchangeRate),
+                    '-',
+                    eb('tax', '*', krwExchangeRate),
+                  ),
+                )
+                .else(eb('dividend', '-', ref('tax')))
+                .end(),
+            )
+            .as('total'),
+        ({ fn, eb, ref }) =>
+          fn
+            .sum(
+              eb
+                .case()
+                .when('unit', '=', 'USD')
+                .then(eb('dividend', '*', krwExchangeRate))
+                .else(ref('dividend'))
+                .end(),
+            )
+            .as('dividend'),
+        ({ fn, eb, ref }) =>
+          fn
+            .sum(
+              eb
+                .case()
+                .when('unit', '=', 'USD')
+                .then(eb('tax', '*', krwExchangeRate))
+                .else(ref('tax'))
+                .end(),
+            )
+            .as('tax'),
       ])
       .where((eb) => eb('userId', '=', user.id))
-      .groupBy([({ ref }) => getYearMonth(ref('dividendAt')), 'unit'])
-      .orderBy([({ ref }) => getYearMonth(ref('dividendAt')), 'unit'])
+      .groupBy([({ ref }) => getYearMonth(ref('dividendAt'))])
+      .orderBy([({ ref }) => getYearMonth(ref('dividendAt'))])
       .execute();
+
+    const data = result.map((row) => ({
+      date: row.date,
+      total: ~~row.total,
+      dividend: ~~row.dividend,
+      tax: ~~row.tax,
+    }));
 
     return { ok: true, data };
   }

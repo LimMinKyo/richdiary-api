@@ -21,7 +21,7 @@ export class CreateDividendRequest {
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty({ description: '화폐' })
+  @ApiProperty({ enum: Unit, description: '화폐' })
   @IsEnum(Unit)
   unit!: Unit;
 
