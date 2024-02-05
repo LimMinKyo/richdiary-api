@@ -21,9 +21,12 @@ import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
 import { DB } from '@/db/types';
-import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
 import { db } from '@/utils/db';
 import fetch from 'node-fetch';
+import {
+  GetDividendsYearRequest,
+  GetDividendsYearResponse,
+} from '../dto/get-dividends-year.dto';
 
 @Injectable()
 export class DividendsService {
@@ -151,9 +154,10 @@ export class DividendsService {
     return { ok: true };
   }
 
-  async getDividendsStatistics(
+  async getDividendsYear(
     user: User,
-  ): Promise<GetDividendsStatisticsResponse> {
+    { date }: GetDividendsYearRequest,
+  ): Promise<GetDividendsYearResponse> {
     const getYearMonth = (
       ref: ExpressionWrapper<DB, 'Dividend', Date>,
     ): RawBuilder<string> => {
@@ -212,16 +216,33 @@ export class DividendsService {
             .as('tax'),
       ])
       .where((eb) => eb('userId', '=', user.id))
+      .where(
+        ({ ref }) =>
+          sql`TO_CHAR(${ref('dividendAt')}, 'YYYY') = ${dayjs(date).format(
+            'YYYY',
+          )}`,
+      )
       .groupBy([({ ref }) => getYearMonth(ref('dividendAt'))])
       .orderBy([({ ref }) => getYearMonth(ref('dividendAt'))])
       .execute();
 
-    const data = result.map((row) => ({
-      date: row.date,
-      total: ~~row.total,
-      dividend: ~~row.dividend,
-      tax: ~~row.tax,
-    }));
+    const data = new Array(12).fill(null).map((_, index) => {
+      const monthData = result.find((row) => dayjs(row.date).month() === index);
+      if (monthData) {
+        return {
+          date: monthData.date,
+          total: ~~monthData.total,
+          dividend: ~~monthData.dividend,
+          tax: ~~monthData.tax,
+        };
+      }
+      return {
+        date: dayjs(date).set('month', index).format('YYYY-MM'),
+        total: 0,
+        dividend: 0,
+        tax: 0,
+      };
+    });
 
     return { ok: true, data };
   }

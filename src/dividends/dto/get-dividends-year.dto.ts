@@ -1,9 +1,9 @@
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Unit } from '@/db/enums';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
 class StatisticsData {
-  @ApiProperty({ example: '2023-12' })
+  @ApiProperty({ example: '2024-01' })
   date!: string;
 
   @ApiProperty({ type: Number })
@@ -16,9 +16,14 @@ class StatisticsData {
   tax!: string | number | bigint;
 }
 
-export class GetDividendsStatisticsResponse extends ResponseDto<
-  StatisticsData[]
-> {
+export class GetDividendsYearRequest {
+  @ApiProperty({ description: 'YYYY', example: '2024' })
+  @IsDateString()
+  @IsNotEmpty()
+  date!: string;
+}
+
+export class GetDividendsYearResponse extends ResponseDto<StatisticsData[]> {
   @ApiProperty({ type: StatisticsData, isArray: true })
   data?: StatisticsData[];
 }

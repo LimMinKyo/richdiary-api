@@ -37,7 +37,10 @@ import {
 import { DividendEntity } from '../entities/dividend.entity';
 import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
-import { GetDividendsStatisticsResponse } from '../dto/get-dividends-statistics.dto';
+import {
+  GetDividendsYearRequest,
+  GetDividendsYearResponse,
+} from '../dto/get-dividends-year.dto';
 
 @ApiAuthRequired()
 @ApiTags('배당일지 API')
@@ -152,12 +155,16 @@ export class DividendsController {
     return this.dividendsService.deleteDividend(user, +id);
   }
 
-  @Get('/statistics')
-  @ApiOperation({ summary: '배당일지 통계' })
-  @ApiOkResponse({ type: GetDividendsStatisticsResponse })
-  async getDividendsStatistics(
+  @Get('/year')
+  @ApiOperation({ summary: '배당일지 연간 통계' })
+  @ApiOkResponse({ type: GetDividendsYearResponse })
+  async getDividendsYear(
     @AuthUser() user: User,
-  ): Promise<GetDividendsStatisticsResponse> {
-    return this.dividendsService.getDividendsStatistics(user);
+    @Query() getDividendsYearRequest: GetDividendsYearRequest,
+  ): Promise<GetDividendsYearResponse> {
+    return this.dividendsService.getDividendsYear(
+      user,
+      getDividendsYearRequest,
+    );
   }
 }
