@@ -20,9 +20,9 @@ import {
 import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
-  GetDividendsRequest,
-  GetDividendsResponse,
-} from '../dto/get-dividends.dto';
+  GetDividendsMonthRequest,
+  GetDividendsMonthResponse,
+} from '../dto/get-dividends-month.dto';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import {
   ApiCreatedResponse,
@@ -66,16 +66,6 @@ export class DividendsController {
     @Body() createDividendRequest: CreateDividendRequest,
   ): Promise<CreateDividendResponse> {
     return this.dividendsService.createDividend(user, createDividendRequest);
-  }
-
-  @Get()
-  @ApiOperation({ summary: '배당일지 조회' })
-  @ApiOkResponsePaginated(DividendEntity)
-  getDividends(
-    @AuthUser() user: User,
-    @Query() getDividendsRequest: GetDividendsRequest,
-  ): Promise<GetDividendsResponse> {
-    return this.dividendsService.getDividends(user, getDividendsRequest);
   }
 
   @Patch(':id')
@@ -155,7 +145,17 @@ export class DividendsController {
     return this.dividendsService.deleteDividend(user, +id);
   }
 
-  @Get('/year')
+  @Get('month')
+  @ApiOperation({ summary: '배당일지 조회' })
+  @ApiOkResponsePaginated(DividendEntity)
+  getDividends(
+    @AuthUser() user: User,
+    @Query() getDividendsRequest: GetDividendsMonthRequest,
+  ): Promise<GetDividendsMonthResponse> {
+    return this.dividendsService.getDividends(user, getDividendsRequest);
+  }
+
+  @Get('year')
   @ApiOperation({ summary: '배당일지 연간 통계' })
   @ApiOkResponse({ type: GetDividendsYearResponse })
   async getDividendsYear(

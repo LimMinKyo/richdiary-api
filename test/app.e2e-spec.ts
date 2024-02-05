@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UpdateDividendRequest } from '@/dividends/dto/update-dividend.dto';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
 import { MailService } from '@/mail/mail.service';
-import { GetDividendsRequest } from '@/dividends/dto/get-dividends.dto';
+import { GetDividendsMonthRequest } from '@/dividends/dto/get-dividends-month.dto';
 import { PaginationMeta } from '@/common/dtos/pagination.dto';
 
 const paginationMetaShape = expect.objectContaining<PaginationMeta>({
@@ -105,7 +105,7 @@ describe('DividendController (e2e)', () => {
 
   describe('/api/dividends (GET)', () => {
     it('Success (200)', async () => {
-      const getDividendsRequest: GetDividendsRequest = {
+      const getDividendsRequest: GetDividendsMonthRequest = {
         date: '2023-11',
       };
 

@@ -14,9 +14,9 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 import { Dividend, User } from '@prisma/client';
 import {
-  GetDividendsRequest,
-  GetDividendsResponse,
-} from '../dto/get-dividends.dto';
+  GetDividendsMonthRequest,
+  GetDividendsMonthResponse,
+} from '../dto/get-dividends-month.dto';
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
@@ -52,8 +52,8 @@ export class DividendsService {
 
   async getDividends(
     user: User,
-    { date, page = 1, perPage = 10 }: GetDividendsRequest,
-  ): Promise<GetDividendsResponse> {
+    { date, page = 1, perPage = 10 }: GetDividendsMonthRequest,
+  ): Promise<GetDividendsMonthResponse> {
     const [result, meta] = await this.prisma.paginator.dividend
       .paginate({
         where: {

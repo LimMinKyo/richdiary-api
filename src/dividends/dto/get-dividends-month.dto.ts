@@ -6,11 +6,11 @@ import {
   PaginationResponse,
 } from '@/common/dtos/pagination.dto';
 
-export class GetDividendsRequest extends PaginationRequest {
+export class GetDividendsMonthRequest extends PaginationRequest {
   @ApiProperty({ description: 'YYYY-MM', example: '2023-11' })
   @IsDateString()
   @IsNotEmpty()
   date!: string;
 }
 
-export class GetDividendsResponse extends PaginationResponse<DividendEntity> {}
+export class GetDividendsMonthResponse extends PaginationResponse<DividendEntity> {}
