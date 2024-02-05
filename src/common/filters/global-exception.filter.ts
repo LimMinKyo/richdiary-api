@@ -3,15 +3,20 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { ResponseDto } from '../dtos/response.dto';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
+  logger = new Logger(GlobalExceptionFilter.name);
+
   catch(exception: HttpException, host: ArgumentsHost) {
+    this.logger.error(exception);
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const statusCode = exception.getStatus();
+    const statusCode = 500;
 
     let httpError: ResponseDto;
 
