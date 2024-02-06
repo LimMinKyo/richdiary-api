@@ -16,12 +16,13 @@ export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const statusCode = 500;
+    let statusCode = 500;
 
     let httpError: ResponseDto;
 
     if (exception instanceof HttpException) {
       // status: XXX, message: 'XXX' 형식의 에러인지 판단합니다.
+      statusCode = exception.getStatus();
       httpError = {
         ok: false,
         message: exception.message,
