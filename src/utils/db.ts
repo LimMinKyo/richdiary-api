@@ -9,7 +9,6 @@ const { database, host, user, password, port } = parseDatabaseUrl(
 
 const dialect = new PostgresDialect({
   pool: new Pool({
-    ssl: process.env.NODE_ENV === 'production',
     database,
     host,
     user,
