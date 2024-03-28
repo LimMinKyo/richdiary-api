@@ -17,7 +17,7 @@ export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
     const req = ctx.getRequest();
     const res = ctx.getResponse();
     const statusCode = this.getHttpStatus(exception);
-    const dateTime = new Date();
+    // const dateTime = new Date();
 
     const message =
       exception instanceof HttpException
@@ -31,11 +31,10 @@ export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
 
     const errorResponse = {
       ...error,
-      code: statusCode,
-      timestamp: dateTime,
-      path: req.url,
-      method: req.method,
-      message: message,
+      // code: statusCode,
+      // timestamp: dateTime,
+      // path: req.url,
+      // method: req.method,
     };
 
     if (exception instanceof HttpException) {

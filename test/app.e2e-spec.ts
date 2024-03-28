@@ -103,14 +103,14 @@ describe('DividendController (e2e)', () => {
     });
   });
 
-  describe('/api/dividends (GET)', () => {
+  describe('/api/dividends/month (GET)', () => {
     it('Success (200)', async () => {
       const getDividendsRequest: GetDividendsMonthRequest = {
         date: '2023-11',
       };
 
       const { status, body } = await request(app.getHttpServer())
-        .get('/api/dividends')
+        .get('/api/dividends/month')
         .auth(accessToken, { type: 'bearer' })
         .query(getDividendsRequest);
 
