@@ -5,6 +5,7 @@ import { Dividend, PrismaClient, User } from '@prisma/client';
 import { CreateDividendRequest } from '../dto/create-dividend.dto';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import dayjs from 'dayjs';
+import { ExchangesService } from '@/exchanges/services/exchanges.service';
 
 const mockUser: User = {
   id: 1,
@@ -35,7 +36,7 @@ describe('DividendsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DividendsService, PrismaService],
+      providers: [DividendsService, PrismaService, ExchangesService],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaClient>())

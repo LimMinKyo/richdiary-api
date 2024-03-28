@@ -4,6 +4,7 @@ import { DividendsService } from '../services/dividends.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaClient } from '@prisma/client';
+import { ExchangesService } from '@/exchanges/services/exchanges.service';
 
 describe('DividendsController', () => {
   let controller: DividendsController;
@@ -12,7 +13,7 @@ describe('DividendsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DividendsController],
-      providers: [DividendsService, PrismaService],
+      providers: [DividendsService, PrismaService, ExchangesService],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaClient>())

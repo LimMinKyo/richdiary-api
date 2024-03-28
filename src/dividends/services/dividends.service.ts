@@ -22,15 +22,18 @@ import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
 import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
 import { DB } from '@/db/types';
 import { db } from '@/utils/db';
-import fetch from 'node-fetch';
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
 } from '../dto/get-dividends-year.dto';
+import { ExchangesService } from '@/exchanges/services/exchanges.service';
 
 @Injectable()
 export class DividendsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly exchangesService: ExchangesService,
+  ) {}
 
   async createDividend(
     user: User,
@@ -158,19 +161,13 @@ export class DividendsService {
     user: User,
     { date }: GetDividendsYearRequest,
   ): Promise<GetDividendsYearResponse> {
+    const krwExchangeRate = await this.exchangesService.getExchangeRate();
+
     const getYearMonth = (
       ref: ExpressionWrapper<DB, 'Dividend', Date>,
     ): RawBuilder<string> => {
       return sql`TO_CHAR(${ref}, 'YYYY-MM')`;
     };
-
-    const exchangeData = await (
-      await fetch(
-        'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json',
-      )
-    ).json();
-
-    const krwExchangeRate = +exchangeData.usd.krw.toFixed(2);
 
     const result = await db
       .selectFrom('Dividend')
