@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { ResponseDto } from '../dtos/response.dto';
@@ -11,30 +12,46 @@ import { ResponseDto } from '../dtos/response.dto';
 export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
   logger = new Logger(GlobalExceptionFilter.name);
 
-  catch(exception: HttpException, host: ArgumentsHost) {
-    this.logger.error(exception);
-
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    let statusCode = 500;
+    const req = ctx.getRequest();
+    const res = ctx.getResponse();
+    const statusCode = this.getHttpStatus(exception);
+    const dateTime = new Date();
 
-    let httpError: ResponseDto;
+    const message =
+      exception instanceof HttpException
+        ? exception.message
+        : 'INTERNAL_SERVER_ERROR';
+
+    const error: ResponseDto = {
+      ok: false,
+      message,
+    };
+
+    const errorResponse = {
+      ...error,
+      code: statusCode,
+      timestamp: dateTime,
+      path: req.url,
+      method: req.method,
+      message: message,
+    };
 
     if (exception instanceof HttpException) {
-      // status: XXX, message: 'XXX' 형식의 에러인지 판단합니다.
-      statusCode = exception.getStatus();
-      httpError = {
-        ok: false,
-        message: exception.message,
-      };
+      this.logger.warn({ err: errorResponse });
     } else {
-      // XXXX() is not a function와 같은 서버 자체에서의 오류일때, 서버 오류로 처리합니다.
-      httpError = {
-        ok: false,
-        message: 'INTERNAL_SERVER_ERROR',
-      };
+      this.logger.error({ err: errorResponse, args: { req, res } });
     }
 
-    response.status(statusCode).json(httpError);
+    res.status(statusCode).json(errorResponse);
+  }
+
+  private getHttpStatus(exception: unknown): HttpStatus {
+    if (exception instanceof HttpException) {
+      return exception.getStatus();
+    } else {
+      return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
   }
 }

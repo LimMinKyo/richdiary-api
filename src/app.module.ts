@@ -4,12 +4,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { DividendsModule } from './dividends/dividends.module';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import Joi from 'joi';
 import { AppController } from './app.controller';
-import { GlobalValidationPipe } from './common/pipes/global-validation-pipe.pipe';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -41,11 +39,8 @@ import { GlobalValidationPipe } from './common/pipes/global-validation-pipe.pipe
     AuthModule,
     MailModule,
     DividendsModule,
+    CommonModule,
   ],
   controllers: [AppController],
-  providers: [
-    { provide: APP_FILTER, useClass: GlobalExceptionFilter },
-    { provide: APP_PIPE, useClass: GlobalValidationPipe },
-  ],
 })
 export class AppModule {}

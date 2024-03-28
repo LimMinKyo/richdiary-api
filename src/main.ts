@@ -2,9 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SWAGGER_AUTH_TOKEN_KEY } from './common/common.constants';
+import { winstonLogger } from './config/logger.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    logger: winstonLogger,
+  });
 
   const config = new DocumentBuilder()
     .setTitle('부자일기 API')
