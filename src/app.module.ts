@@ -8,6 +8,9 @@ import { DividendsModule } from './dividends/dividends.module';
 import Joi from 'joi';
 import { AppController } from './app.controller';
 import { CommonModule } from './common/common.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -32,7 +35,16 @@ import { CommonModule } from './common/common.module';
         KAKAO_CLIENT_ID: Joi.string().required(),
         KAKAO_CLIENT_SECRET: Joi.string().required(),
         KAKAO_CALLBACK_URL: Joi.string().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.string().required(),
       }),
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: process.env.REDIS_HOST,
+      port: +(process.env.REDIS_PORT || 6379),
+      ttl: 5,
     }),
     PrismaModule,
     UsersModule,
@@ -40,6 +52,12 @@ import { CommonModule } from './common/common.module';
     MailModule,
     DividendsModule,
     CommonModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
   controllers: [AppController],
 })

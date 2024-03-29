@@ -11,3 +11,4 @@
 - PostgreSQL
 - Swagger
 - Winston
+- Redis
