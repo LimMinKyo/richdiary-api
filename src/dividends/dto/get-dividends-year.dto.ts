@@ -1,19 +1,21 @@
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty } from 'class-validator';
+import { DividendEntity } from '../entities/dividend.entity';
+class Data {
+  @ApiProperty({ example: 1230.5 })
+  exchangeRate!: number;
 
-class StatisticsData {
-  @ApiProperty({ example: '2024-01' })
-  date!: string;
-
-  @ApiProperty({ type: Number })
-  total!: string | number | bigint;
-
-  @ApiProperty({ type: Number })
-  dividend!: string | number | bigint;
-
-  @ApiProperty({ type: Number })
-  tax!: string | number | bigint;
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'array',
+      items: {
+        allOf: [{ $ref: getSchemaPath(DividendEntity) }],
+      },
+    },
+  })
+  data!: DividendEntity[][];
 }
 
 export class GetDividendsYearRequest {
@@ -23,7 +25,7 @@ export class GetDividendsYearRequest {
   date!: string;
 }
 
-export class GetDividendsYearResponse extends ResponseDto<StatisticsData[]> {
-  @ApiProperty({ type: StatisticsData, isArray: true })
-  data?: StatisticsData[];
+export class GetDividendsYearResponse extends ResponseDto<Data> {
+  @ApiProperty({ type: Data })
+  data?: Data;
 }

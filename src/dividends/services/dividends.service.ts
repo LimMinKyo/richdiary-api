@@ -19,14 +19,12 @@ import {
 } from '../dto/get-dividends-month.dto';
 import dayjs from 'dayjs';
 import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
-import { ExpressionWrapper, RawBuilder, sql } from 'kysely';
-import { DB } from '@/db/types';
-import { db } from '@/utils/db';
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
 } from '../dto/get-dividends-year.dto';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
+import { DividendEntity } from '../entities/dividend.entity';
 
 @Injectable()
 export class DividendsService {
@@ -75,7 +73,7 @@ export class DividendsService {
         limit: perPage,
       });
 
-    const data = result.map(({ userId, ...rest }) => rest);
+    const data = result.map((dividend) => new DividendEntity(dividend));
 
     return {
       ok: true,
@@ -163,86 +161,31 @@ export class DividendsService {
   ): Promise<GetDividendsYearResponse> {
     const krwExchangeRate = await this.exchangesService.getExchangeRate();
 
-    const getYearMonth = (
-      ref: ExpressionWrapper<DB, 'Dividend', Date>,
-    ): RawBuilder<string> => {
-      return sql`TO_CHAR(${ref}, 'YYYY-MM')`;
-    };
-
-    const result = await db
-      .selectFrom('Dividend')
-      .select([
-        ({ ref }) => getYearMonth(ref('dividendAt')).as('date'),
-        ({ fn, eb, ref }) =>
-          fn
-            .sum(
-              eb
-                .case()
-                .when('unit', '=', 'USD')
-                .then(
-                  eb(
-                    eb('dividend', '*', krwExchangeRate),
-                    '-',
-                    eb('tax', '*', krwExchangeRate),
-                  ),
-                )
-                .else(eb('dividend', '-', ref('tax')))
-                .end(),
-            )
-            .as('total'),
-        ({ fn, eb, ref }) =>
-          fn
-            .sum(
-              eb
-                .case()
-                .when('unit', '=', 'USD')
-                .then(eb('dividend', '*', krwExchangeRate))
-                .else(ref('dividend'))
-                .end(),
-            )
-            .as('dividend'),
-        ({ fn, eb, ref }) =>
-          fn
-            .sum(
-              eb
-                .case()
-                .when('unit', '=', 'USD')
-                .then(eb('tax', '*', krwExchangeRate))
-                .else(ref('tax'))
-                .end(),
-            )
-            .as('tax'),
-      ])
-      .where((eb) => eb('userId', '=', user.id))
-      .where(
-        ({ ref }) =>
-          sql`TO_CHAR(${ref('dividendAt')}, 'YYYY') = ${dayjs(date).format(
-            'YYYY',
-          )}`,
-      )
-      .groupBy([({ ref }) => getYearMonth(ref('dividendAt'))])
-      .orderBy([({ ref }) => getYearMonth(ref('dividendAt'))])
-      .execute();
-
-    const data = new Array(12).fill(null).map((_, index) => {
-      const monthData = result.find((row) => dayjs(row.date).month() === index);
-      if (monthData) {
-        return {
-          date: monthData.date,
-          total: ~~monthData.total,
-          dividend: ~~monthData.dividend,
-          tax: ~~monthData.tax,
-        };
-      }
-      return {
-        date: dayjs(date).set('month', index).format('YYYY-MM'),
-        total: 0,
-        dividend: 0,
-        tax: 0,
-      };
+    const result = await this.prisma.dividend.findMany({
+      where: {
+        userId: user.id,
+        dividendAt: {
+          gte: dayjs(date).startOf('year').toISOString(),
+          lte: dayjs(date).endOf('year').toISOString(),
+        },
+      },
+      orderBy: {
+        dividendAt: 'asc',
+      },
     });
 
-    return { ok: true, data };
+    const data = Array.from<null, DividendEntity[]>({ length: 12 }, () => []);
+
+    result.forEach((dividend) => {
+      const monthIndex = dayjs(dividend.dividendAt).month();
+
+      data[monthIndex].push(new DividendEntity(dividend));
+    });
+
+    return {
+      ok: true,
+      data: { exchangeRate: krwExchangeRate, data },
+    };
   }
 
   private checkIsOwnDividend(user: User, dividend: Dividend) {
