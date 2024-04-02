@@ -24,7 +24,7 @@ const paginationMetaShape = expect.objectContaining<PaginationMeta>({
   perPage: expect.any(Number),
 });
 
-describe('DividendController (e2e)', () => {
+describe('배당일지', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: User;
@@ -89,8 +89,8 @@ describe('DividendController (e2e)', () => {
     await app.close();
   });
 
-  describe('/api/dividends (POST)', () => {
-    it('Created (201)', async () => {
+  describe('배당일지 생성', () => {
+    it('배당일지를 성공적으로 생성한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post('/api/dividends')
         .auth(accessToken, { type: 'bearer' })
@@ -103,8 +103,8 @@ describe('DividendController (e2e)', () => {
     });
   });
 
-  describe('/api/dividends/month (GET)', () => {
-    it('Success (200)', async () => {
+  describe('배당일지 조회', () => {
+    it('해당 월에 해당하는 배당일지 리스트를 조회한다.', async () => {
       const getDividendsRequest: GetDividendsMonthRequest = {
         date: '2023-11',
       };
@@ -123,8 +123,8 @@ describe('DividendController (e2e)', () => {
     });
   });
 
-  describe('/api/dividends/:id (PATCH)', () => {
-    it('Forbidden (403)', async () => {
+  describe('배당일지 수정', () => {
+    it('다른 사람의 배당일지를 수정하지 못한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
 
       const { status, body } = await request(app.getHttpServer())
@@ -138,7 +138,7 @@ describe('DividendController (e2e)', () => {
       });
     });
 
-    it('Not Found (404)', async () => {
+    it('없는 배당일지는 수정하지 못한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .patch(`/api/dividends/${999}`)
         .auth(accessToken, { type: 'bearer' });
@@ -150,7 +150,7 @@ describe('DividendController (e2e)', () => {
       });
     });
 
-    it('Success (200)', async () => {
+    it('배당일지를 성공적으로 수정한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
       const dividendId = dividend.id;
       const updateDividendRequest: UpdateDividendRequest = {
@@ -183,8 +183,8 @@ describe('DividendController (e2e)', () => {
     });
   });
 
-  describe('/api/dividends/:id (DELETE)', () => {
-    it('Forbidden (403)', async () => {
+  describe('배당일지 삭제', () => {
+    it('다른 사람의 배당일지를 삭제하지 못한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
 
       const { status, body } = await request(app.getHttpServer())
@@ -202,7 +202,7 @@ describe('DividendController (e2e)', () => {
       expect(count).toBe(1);
     });
 
-    it('Not Found (404)', async () => {
+    it('없는 배당일지는 삭제하지 못한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .delete(`/api/dividends/${999}`)
         .auth(accessToken, { type: 'bearer' });
@@ -214,7 +214,7 @@ describe('DividendController (e2e)', () => {
       });
     });
 
-    it('Success (200)', async () => {
+    it('배당일지를 성공적으로 삭제한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
 
       const { status, body } = await request(app.getHttpServer())
@@ -233,7 +233,7 @@ describe('DividendController (e2e)', () => {
   });
 });
 
-describe('UsersController (e2e)', () => {
+describe('유저', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: User;
@@ -273,8 +273,8 @@ describe('UsersController (e2e)', () => {
     await app.close();
   });
 
-  describe('/api/users (POST)', () => {
-    it('Created (201)', async () => {
+  describe('회원가입', () => {
+    it('회원가입을 성공적으로 한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post('/api/users')
         .send(createAccountRequest);
@@ -295,8 +295,8 @@ describe('UsersController (e2e)', () => {
     });
   });
 
-  describe('/api/users/profile (GET)', () => {
-    it('Success (200)', async () => {
+  describe('내 정보 조회', () => {
+    it('내 정보를 성공적으로 조회를 한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .get('/api/users/profile')
         .auth(accessToken, { type: 'bearer' });
@@ -315,8 +315,8 @@ describe('UsersController (e2e)', () => {
     });
   });
 
-  describe('/api/users/verify (PATCH)', () => {
-    it('Bad Request (400)', async () => {
+  describe('이메일 인증', () => {
+    it('잘못된 인증코드로 이메일 인증을 할 경우 실패한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .patch(`/api/users/verify`)
         .auth(accessToken, { type: 'bearer' })
@@ -329,7 +329,7 @@ describe('UsersController (e2e)', () => {
       });
     });
 
-    it('Success (200)', async () => {
+    it('이메일 인증이 성공적으로 완료된다.', async () => {
       const verification = await prisma.verification.findFirst({
         where: { userId: user.id },
       });
