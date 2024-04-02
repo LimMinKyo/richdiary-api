@@ -6,23 +6,23 @@ import {
 import {
   CreateDividendRequest,
   CreateDividendResponse,
-} from '../dto/create-dividend.dto';
+} from '../dtos/create-dividend.dto';
 import {
   UpdateDividendRequest,
   UpdateDividendResponse,
-} from '../dto/update-dividend.dto';
+} from '../dtos/update-dividend.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Dividend, User } from '@prisma/client';
 import {
   GetDividendsMonthRequest,
   GetDividendsMonthResponse,
-} from '../dto/get-dividends-month.dto';
+} from '../dtos/get-dividends-month.dto';
 import dayjs from 'dayjs';
-import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
+import { DeleteDividendResponse } from '../dtos/delete-dividend.dto';
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
-} from '../dto/get-dividends-year.dto';
+} from '../dtos/get-dividends-year.dto';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { DividendEntity } from '../entities/dividend.entity';
 

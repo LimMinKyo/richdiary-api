@@ -4,13 +4,13 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CreateDividendRequest } from '@/dividends/dto/create-dividend.dto';
+import { CreateDividendRequest } from '@/dividends/dtos/create-dividend.dto';
 import { User, Dividend } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
-import { UpdateDividendRequest } from '@/dividends/dto/update-dividend.dto';
+import { UpdateDividendRequest } from '@/dividends/dtos/update-dividend.dto';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
 import { MailService } from '@/mail/mail.service';
-import { GetDividendsMonthRequest } from '@/dividends/dto/get-dividends-month.dto';
+import { GetDividendsMonthRequest } from '@/dividends/dtos/get-dividends-month.dto';
 import { PaginationMeta } from '@/common/dtos/pagination.dto';
 
 const paginationMetaShape = expect.objectContaining<PaginationMeta>({

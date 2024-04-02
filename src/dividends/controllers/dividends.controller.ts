@@ -12,18 +12,18 @@ import { DividendsService } from '../services/dividends.service';
 import {
   CreateDividendRequest,
   CreateDividendResponse,
-} from '../dto/create-dividend.dto';
+} from '../dtos/create-dividend.dto';
 import {
   UpdateDividendRequest,
   UpdateDividendResponse,
-} from '../dto/update-dividend.dto';
+} from '../dtos/update-dividend.dto';
 import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
   GetDividendsMonthRequest,
   GetDividendsMonthResponse,
-} from '../dto/get-dividends-month.dto';
-import { DeleteDividendResponse } from '../dto/delete-dividend.dto';
+} from '../dtos/get-dividends-month.dto';
+import { DeleteDividendResponse } from '../dtos/delete-dividend.dto';
 import {
   ApiCreatedResponse,
   ApiExtraModels,
@@ -40,7 +40,7 @@ import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
-} from '../dto/get-dividends-year.dto';
+} from '../dtos/get-dividends-year.dto';
 
 @ApiAuthRequired()
 @ApiTags('배당일지 API')
