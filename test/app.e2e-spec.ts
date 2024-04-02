@@ -24,7 +24,7 @@ const paginationMetaShape = expect.objectContaining<PaginationMeta>({
   perPage: expect.any(Number),
 });
 
-describe('배당일지', () => {
+describe('/api/dividends', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: User;
@@ -89,7 +89,7 @@ describe('배당일지', () => {
     await app.close();
   });
 
-  describe('배당일지 생성', () => {
+  describe('POST /api/dividends', () => {
     it('배당일지를 성공적으로 생성한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post('/api/dividends')
@@ -103,7 +103,7 @@ describe('배당일지', () => {
     });
   });
 
-  describe('배당일지 조회', () => {
+  describe('GET /api/dividends/month', () => {
     it('해당 월에 해당하는 배당일지 리스트를 조회한다.', async () => {
       const getDividendsRequest: GetDividendsMonthRequest = {
         date: '2023-11',
@@ -123,7 +123,7 @@ describe('배당일지', () => {
     });
   });
 
-  describe('배당일지 수정', () => {
+  describe('PATCH /api/dividends/:dividendId', () => {
     it('다른 사람의 배당일지를 수정하지 못한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
 
@@ -183,7 +183,7 @@ describe('배당일지', () => {
     });
   });
 
-  describe('배당일지 삭제', () => {
+  describe('DELETE /api/dividends/:dividendId', () => {
     it('다른 사람의 배당일지를 삭제하지 못한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
 
@@ -233,7 +233,7 @@ describe('배당일지', () => {
   });
 });
 
-describe('유저', () => {
+describe('/api/users', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: User;
@@ -273,7 +273,7 @@ describe('유저', () => {
     await app.close();
   });
 
-  describe('회원가입', () => {
+  describe('POST /api/users', () => {
     it('회원가입을 성공적으로 한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post('/api/users')
@@ -295,7 +295,7 @@ describe('유저', () => {
     });
   });
 
-  describe('내 정보 조회', () => {
+  describe('GET /api/users/profile', () => {
     it('내 정보를 성공적으로 조회를 한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .get('/api/users/profile')
@@ -315,7 +315,7 @@ describe('유저', () => {
     });
   });
 
-  describe('이메일 인증', () => {
+  describe('PATCH /api/users/verify', () => {
     it('잘못된 인증코드로 이메일 인증을 할 경우 실패한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
         .patch(`/api/users/verify`)
