@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -41,10 +42,13 @@ import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
     }),
     CacheModule.register({
       isGlobal: true,
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: +(process.env.REDIS_PORT || 6379),
-      ttl: 5,
+    }),
+    RedisModule.forRoot({
+      readyLog: true,
+      config: {
+        host: process.env.REDIS_HOST,
+        port: +(process.env.REDIS_PORT || 6379),
+      },
     }),
     PrismaModule,
     UsersModule,
