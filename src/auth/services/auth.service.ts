@@ -1,8 +1,8 @@
 import { UsersService } from '@/users/services/users.service';
 import { comparePassword } from '@/utils/password';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
+import { Provider, User } from '@prisma/client';
 import { JwtPayload, RequestWithUser } from '../auth.interfaces';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
@@ -16,21 +16,26 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async validateUser(email: string, password: string) {
+  async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findOneByEmail(email);
 
     if (!user) {
-      return null;
+      throw new UnauthorizedException();
     }
 
-    let isEqualPassword = false;
-    if (user.password) {
-      isEqualPassword = await comparePassword(password, user.password);
+    if (!user.password) {
+      throw new UnauthorizedException(
+        `${Provider.LOCAL} provider 유저가 아닙니다.`,
+      );
     }
 
-    if (user && isEqualPassword) {
-      return { id: user.id, email: user.email };
+    const isEqualPassword = await comparePassword(password, user.password);
+
+    if (!isEqualPassword) {
+      throw new UnauthorizedException();
     }
+
+    return user;
   }
 
   async login(user: User): Promise<LoginResponse> {

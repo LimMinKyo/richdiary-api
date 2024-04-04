@@ -12,6 +12,7 @@ import {
 } from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
 import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -54,10 +55,10 @@ export class UsersService {
     };
   }
 
-  getMyProfile({ password, id, ...rest }: User): GetMyProfileResponse {
+  getMyProfile(user: User): GetMyProfileResponse {
     return {
       ok: true,
-      data: rest,
+      data: new UserEntity(user),
     };
   }
 
@@ -93,7 +94,7 @@ export class UsersService {
     email: string;
     name: string;
     provider: Provider;
-  }): Promise<User | null> {
+  }): Promise<User> {
     const user = await this.findOneByEmail(email);
 
     if (user) {
