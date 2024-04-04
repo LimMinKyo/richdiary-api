@@ -10,6 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { KakaoStrategy } from './strategies/kakao.strategy';
+import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { KakaoStrategy } from './strategies/kakao.strategy';
     AuthService,
     LocalStrategy,
     JwtStrategy,
+    JwtRefreshStrategy,
     KakaoStrategy,
     { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],

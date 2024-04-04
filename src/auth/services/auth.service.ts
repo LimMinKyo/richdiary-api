@@ -3,7 +3,7 @@ import { comparePassword } from '@/utils/password';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Provider, User } from '@prisma/client';
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from '../dtos/login.dto';
 import { JwtPayload } from '../auth.interfaces';
@@ -38,26 +38,58 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<LoginResponse> {
+  async login(user: User): Promise<{
+    refreshToken: string;
+    cookieOptions: CookieOptions;
+    response: LoginResponse;
+  }> {
     const accessToken = this.generateAccessToken(user);
+    const { refreshToken, cookieOptions } = this.generateRefreshToken(user);
 
     return {
-      ok: true,
-      data: {
-        accessToken,
+      refreshToken,
+      cookieOptions,
+      response: {
+        ok: true,
+        data: {
+          accessToken,
+        },
       },
     };
   }
 
-  async oauthLogin(user: User, res: Response) {
+  async oauthLogin(user: User) {
     const accessToken = this.generateAccessToken(user);
+    const { refreshToken, cookieOptions } = this.generateRefreshToken(user);
     const frontUrl = this.configService.get('FRONT_URL');
-    return res.redirect(`${frontUrl}/login/oauth?access-token=${accessToken}`);
+    const redirectUrl = `${frontUrl}/login/oauth?access-token=${accessToken}`;
+    return { redirectUrl, refreshToken, cookieOptions };
   }
 
   private generateAccessToken(user: User) {
     const payload: JwtPayload = { id: user.id };
     const accessToken = this.jwtService.sign(payload);
     return accessToken;
+  }
+
+  private generateRefreshToken(user: User): {
+    refreshToken: string;
+    cookieOptions: CookieOptions;
+  } {
+    const payload: JwtPayload = { id: user.id };
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+
+    // 쿠키 만료 기간 설정 (7일)
+    const maxAge = 7 * 24 * 60 * 60; // 604800초
+
+    return {
+      refreshToken,
+      cookieOptions: {
+        domain: '.' + this.configService.get('DOMAIN'),
+        httpOnly: true,
+        sameSite: 'strict',
+        maxAge: maxAge * 1000,
+      },
+    };
   }
 }

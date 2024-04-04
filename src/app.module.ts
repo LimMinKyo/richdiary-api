@@ -28,6 +28,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .required(),
+        DOMAIN: Joi.string().required(),
         FRONT_URL: Joi.string().required(),
         DATABASE_URL: Joi.string().required(),
         JWT_SECRET_KEY: Joi.string().required(),

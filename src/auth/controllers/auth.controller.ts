@@ -8,6 +8,8 @@ import { LoginRequest, LoginResponse } from '../dtos/login.dto';
 import { KakaoAuthGuard } from '../guards/kakao-auth.guard';
 import { AuthUser } from '../decorators/auth-user.decorator';
 import { User } from '@prisma/client';
+import { REFRESH_TOKEN_KEY } from '../auth.constants';
+import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 
 @Controller('api/auth')
 @ApiTags('인증 API')
@@ -22,8 +24,10 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequest })
   @Post('login')
-  async login(@AuthUser() user: User): Promise<LoginResponse> {
-    return await this.authService.login(user);
+  async login(@AuthUser() user: User, @Res() res: Response) {
+    const { refreshToken, cookieOptions, response } =
+      await this.authService.login(user);
+    res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
   }
 
   @Public()
@@ -31,6 +35,22 @@ export class AuthController {
   @UseGuards(KakaoAuthGuard)
   @Get('login/kakao')
   async loginKakao(@AuthUser() user: User, @Res() res: Response) {
-    return this.authService.oauthLogin(user, res);
+    const { redirectUrl, cookieOptions, refreshToken } =
+      await this.authService.oauthLogin(user);
+
+    res
+      .cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions)
+      .redirect(redirectUrl);
+  }
+
+  @Public()
+  @ApiOperation({ summary: '토큰 리프레쉬' })
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh')
+  async refresh(@AuthUser() user: User, @Res() res: Response) {
+    const { refreshToken, cookieOptions, response } =
+      await this.authService.login(user);
+
+    res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
   }
 }
