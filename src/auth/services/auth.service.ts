@@ -3,10 +3,10 @@ import { comparePassword } from '@/utils/password';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Provider, User } from '@prisma/client';
-import { JwtPayload, RequestWithUser } from '../auth.interfaces';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from '../dtos/login.dto';
+import { JwtPayload } from '../auth.interfaces';
 
 @Injectable()
 export class AuthService {
@@ -39,24 +39,25 @@ export class AuthService {
   }
 
   async login(user: User): Promise<LoginResponse> {
-    const payload: JwtPayload = { id: user.id };
+    const accessToken = this.generateAccessToken(user);
 
     return {
       ok: true,
       data: {
-        access_token: this.jwtService.sign(payload),
+        accessToken,
       },
     };
   }
 
-  async oauthLogin(req: RequestWithUser, res: Response) {
-    if (req.user) {
-      const payload: JwtPayload = { id: req.user.id };
-      const accessToken = this.jwtService.sign(payload);
-      const frontUrl = this.configService.get('FRONT_URL');
-      return res.redirect(
-        `${frontUrl}/login/oauth?access-token=${accessToken}`,
-      );
-    }
+  async oauthLogin(user: User, res: Response) {
+    const accessToken = this.generateAccessToken(user);
+    const frontUrl = this.configService.get('FRONT_URL');
+    return res.redirect(`${frontUrl}/login/oauth?access-token=${accessToken}`);
+  }
+
+  private generateAccessToken(user: User) {
+    const payload: JwtPayload = { id: user.id };
+    const accessToken = this.jwtService.sign(payload);
+    return accessToken;
   }
 }
