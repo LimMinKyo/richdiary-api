@@ -1,7 +1,6 @@
 import { UsersService } from '@/users/services/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { REFRESH_TOKEN_KEY, jwtConstants } from '../auth.constants';
 import { JwtPayload } from '../auth.interfaces';
@@ -20,12 +19,11 @@ export class JwtRefreshStrategy extends PassportStrategy(
         },
       ]),
       secretOrKey: jwtConstants.secret,
-      passReqToCallback: true,
       ignoreExpiration: false,
     });
   }
 
-  async validate(req: Request, payload: JwtPayload): Promise<User> {
+  async validate(payload: JwtPayload): Promise<User> {
     const user = await this.usersService.findOneById(payload.id);
 
     if (!user) {

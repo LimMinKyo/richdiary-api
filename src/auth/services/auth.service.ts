@@ -3,10 +3,11 @@ import { comparePassword } from '@/utils/password';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Provider, User } from '@prisma/client';
-import { CookieOptions, Response } from 'express';
+import { CookieOptions } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LoginResponse } from '../dtos/login.dto';
 import { JwtPayload } from '../auth.interfaces';
+import { LogoutResponse } from '../dtos/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -58,12 +59,28 @@ export class AuthService {
     };
   }
 
-  async oauthLogin(user: User) {
+  async oauthLogin(user: User): Promise<{
+    redirectUrl: string;
+    refreshToken: string;
+    cookieOptions: CookieOptions;
+  }> {
     const accessToken = this.generateAccessToken(user);
     const { refreshToken, cookieOptions } = this.generateRefreshToken(user);
     const frontUrl = this.configService.get('FRONT_URL');
     const redirectUrl = `${frontUrl}/login/oauth?access-token=${accessToken}`;
     return { redirectUrl, refreshToken, cookieOptions };
+  }
+
+  async logout(): Promise<{
+    cookieOptions: CookieOptions;
+    response: LogoutResponse;
+  }> {
+    return {
+      cookieOptions: this.getRefreshTokenCookieOptions({ maxAge: 0 }),
+      response: {
+        ok: true,
+      },
+    };
   }
 
   private generateAccessToken(user: User) {
@@ -77,19 +94,28 @@ export class AuthService {
     cookieOptions: CookieOptions;
   } {
     const payload: JwtPayload = { id: user.id };
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const DAYS = 7;
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: `${DAYS}d`,
+    });
 
     // 쿠키 만료 기간 설정 (7일)
-    const maxAge = 7 * 24 * 60 * 60; // 604800초
+    const maxAge = DAYS * 24 * 60 * 60 * 1000; // 604800초
 
     return {
       refreshToken,
-      cookieOptions: {
-        domain: '.' + this.configService.get('DOMAIN'),
-        httpOnly: true,
-        sameSite: 'strict',
-        maxAge: maxAge * 1000,
-      },
+      cookieOptions: { ...this.getRefreshTokenCookieOptions({ maxAge }) },
+    };
+  }
+
+  private getRefreshTokenCookieOptions(
+    cookieOptions?: CookieOptions,
+  ): CookieOptions {
+    return {
+      domain: '.' + this.configService.get('DOMAIN'),
+      httpOnly: true,
+      sameSite: 'strict',
+      ...cookieOptions,
     };
   }
 }

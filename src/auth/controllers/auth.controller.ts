@@ -24,7 +24,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequest })
   @Post('login')
-  async login(@AuthUser() user: User, @Res() res: Response) {
+  async login(@AuthUser() user: User, @Res() res: Response): Promise<void> {
     const { refreshToken, cookieOptions, response } =
       await this.authService.login(user);
     res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
@@ -34,7 +34,10 @@ export class AuthController {
   @ApiOperation({ summary: '카카오 SSO 로그인' })
   @UseGuards(KakaoAuthGuard)
   @Get('login/kakao')
-  async loginKakao(@AuthUser() user: User, @Res() res: Response) {
+  async loginKakao(
+    @AuthUser() user: User,
+    @Res() res: Response,
+  ): Promise<void> {
     const { redirectUrl, cookieOptions, refreshToken } =
       await this.authService.oauthLogin(user);
 
@@ -52,5 +55,14 @@ export class AuthController {
       await this.authService.login(user);
 
     res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
+  }
+
+  @Public()
+  @ApiOperation({ summary: '로그아웃(리프레쉬 토큰 쿠키 삭제)' })
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    const { cookieOptions, response } = await this.authService.logout();
+
+    res.clearCookie(REFRESH_TOKEN_KEY, cookieOptions).send(response);
   }
 }
