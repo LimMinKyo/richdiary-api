@@ -49,6 +49,16 @@ model Dividend {
   userId     Int
 }
 
+model Exchange {
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  date      String
+  currency  Unit
+  rate      Float
+
+  @@id([date, currency])
+}
+
 enum Provider {
   LOCAL
   KAKAO

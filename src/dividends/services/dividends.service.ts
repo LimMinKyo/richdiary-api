@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -159,7 +160,15 @@ export class DividendsService {
     user: User,
     { date }: GetDividendsYearRequest,
   ): Promise<GetDividendsYearResponse> {
-    const krwExchangeRate = await this.exchangesService.getExchangeRate();
+    const { data: exchangeData } = await this.exchangesService.getExchangeRate(
+      dayjs(date).format('YYYY-MM'),
+    );
+
+    if (!exchangeData) {
+      throw new InternalServerErrorException(
+        '환율 데이터 조회에 실패했습니다.',
+      );
+    }
 
     const result = await this.prisma.dividend.findMany({
       where: {
@@ -184,7 +193,7 @@ export class DividendsService {
 
     return {
       ok: true,
-      data: { exchangeRate: krwExchangeRate, data },
+      data: { exchangeRate: exchangeData.rate, data },
     };
   }
 

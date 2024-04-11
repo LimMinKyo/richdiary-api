@@ -39,6 +39,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
         KAKAO_CALLBACK_URL: Joi.string().required(),
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.string().required(),
+        EXCHANGE_APP_ID: Joi.string().required(),
       }),
     }),
     CacheModule.register({

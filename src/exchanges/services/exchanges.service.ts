@@ -1,15 +1,75 @@
-import { Injectable } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import dayjs from 'dayjs';
+import { GetExchangeRateResponse } from '../dtos/get-exchange-rate.dto';
+import { ExchangeEntity } from '../entity/exchange.entity';
+
+interface ExchangeApiData {
+  disclaimer: string;
+  license: string;
+  timestamp: number;
+  base: 'USD';
+  rates: {
+    [key: string]: number;
+  };
+}
 
 @Injectable()
 export class ExchangesService {
-  async getExchangeRate() {
-    const response = await fetch(
-      'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json',
-    );
-    const exchangeData = await response.json();
+  private readonly logger = new Logger(ExchangesService.name);
 
-    const krwExchangeRate = +exchangeData.usd.krw.toFixed(2);
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-    return krwExchangeRate;
+  async getExchangeRate(searchdate: string): Promise<GetExchangeRateResponse> {
+    const APP_ID = this.configService.get('EXCHANGE_APP_ID');
+
+    try {
+      const formatedSearchDate = dayjs(searchdate).format('YYYY-MM');
+
+      let data = await this.prisma.exchange.findUnique({
+        where: {
+          date_currency: {
+            date: formatedSearchDate,
+            currency: 'USD',
+          },
+        },
+      });
+
+      if (!data) {
+        const searchDateEndOfMonth = dayjs(searchdate)
+          .endOf('month')
+          .format('YYYY-MM-DD');
+
+        const response = await fetch(
+          `https://openexchangerates.org/api/historical/${searchDateEndOfMonth}.json?app_id=${APP_ID}&show_alternative=false&prettyprint=false`,
+        );
+        const exchangeApiData: ExchangeApiData = await response.json();
+
+        this.logger.debug('환율 조회 API 요청');
+
+        data = await this.prisma.exchange.create({
+          data: {
+            date: formatedSearchDate,
+            currency: 'USD',
+            rate: +exchangeApiData.rates['KRW'].toFixed(2),
+          },
+        });
+      }
+
+      return {
+        ok: true,
+        data: new ExchangeEntity(data),
+      };
+    } catch (error) {
+      this.logger.warn(error);
+      return {
+        ok: false,
+        message: '환율 조회 실패',
+      };
+    }
   }
 }
