@@ -9,7 +9,6 @@ import Joi from 'joi';
 import { AppController } from './app.controller';
 import { CommonModule } from './common/common.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-redis-store';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 

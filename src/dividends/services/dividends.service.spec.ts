@@ -6,6 +6,7 @@ import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import dayjs from 'dayjs';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
+import { ConfigService } from '@nestjs/config';
 
 const mockUser: User = {
   id: 1,
@@ -36,7 +37,12 @@ describe('DividendsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DividendsService, PrismaService, ExchangesService],
+      providers: [
+        PrismaService,
+        DividendsService,
+        ExchangesService,
+        ConfigService,
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaClient>())
