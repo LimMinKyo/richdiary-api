@@ -44,9 +44,19 @@ export class ExchangesService {
           .endOf('month')
           .format('YYYY-MM-DD');
 
-        const response = await fetch(
-          `https://openexchangerates.org/api/historical/${searchDateEndOfMonth}.json?app_id=${APP_ID}&show_alternative=false&prettyprint=false`,
+        const requestUrl = new URL(
+          `https://openexchangerates.org/api/historical/${searchDateEndOfMonth}.json`,
         );
+        const searchParams = new URLSearchParams({
+          app_id: APP_ID,
+          symbols: ['KRW'].join(','),
+          show_alternative: 'false',
+          prettyprint: 'false',
+        }).toString();
+
+        requestUrl.search = searchParams;
+
+        const response = await fetch(requestUrl);
         const exchangeApiData: ExchangeApiData = await response.json();
 
         this.logger.debug('환율 조회 API 요청');
