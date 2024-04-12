@@ -33,4 +33,7 @@ export class DividendEntity implements Dividend {
 
   @Exclude()
   userId!: number;
+
+  @Exclude()
+  portfolioId!: number | null;
 }

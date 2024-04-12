@@ -25,6 +25,7 @@ model User {
   verified     Boolean       @default(false)
   verification Verification?
   dividends    Dividend[]
+  Portfolio    Portfolio[]
 }
 
 model Verification {
@@ -36,17 +37,29 @@ model Verification {
   userId    Int      @unique
 }
 
+model Portfolio {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now()) @db.Timestamptz()
+  updatedAt DateTime   @updatedAt @db.Timestamptz()
+  name      String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  Dividend  Dividend[]
+}
+
 model Dividend {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now()) @db.Timestamptz()
-  updatedAt  DateTime @updatedAt @db.Timestamptz()
-  dividendAt DateTime @db.Timestamptz()
-  name       String
-  unit       Unit
-  dividend   Float
-  tax        Float
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
+  id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now()) @db.Timestamptz()
+  updatedAt   DateTime   @updatedAt @db.Timestamptz()
+  dividendAt  DateTime   @db.Timestamptz()
+  name        String
+  unit        Unit
+  dividend    Float
+  tax         Float
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
+  portfolioId Int?
 }
 
 model Exchange {

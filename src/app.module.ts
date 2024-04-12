@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { PortfoliosModule } from './portfolios/portfolios.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
     MailModule,
     DividendsModule,
     CommonModule,
+    PortfoliosModule,
   ],
   providers: [
     {

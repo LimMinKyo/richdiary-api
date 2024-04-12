@@ -29,6 +29,7 @@ const mockDividend: Dividend = {
   tax: 1,
   unit: 'KRW',
   userId: mockUser.id,
+  portfolioId: null,
 };
 
 describe('DividendsService', () => {
