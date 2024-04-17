@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   CreateAccountRequest,
   CreateAccountResponse,
+  createAccountErrorMessage,
 } from '../dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
@@ -9,6 +10,7 @@ import { MailService } from '@/mail/mail.service';
 import {
   VerifyEmailRequest,
   VerifyEmailResponse,
+  verifyEmailErrorMessage,
 } from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
 import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
@@ -29,10 +31,9 @@ export class UsersService {
     const user = await this.findOneByEmail(email);
 
     if (user) {
-      throw new BadRequestException({
-        ok: false,
-        message: '해당 이메일은 이미 존재합니다.',
-      });
+      throw new BadRequestException(
+        createAccountErrorMessage.EMAIL_ALREADY_EXIST,
+      );
     }
 
     password = await hashPassword(password);
@@ -117,10 +118,7 @@ export class UsersService {
     });
 
     if (!verification) {
-      throw new BadRequestException({
-        ok: false,
-        message: '인증코드가 유효하지 않습니다.',
-      });
+      throw new BadRequestException(verifyEmailErrorMessage.CODE_INVALID);
     }
 
     await this.prisma.user.update({

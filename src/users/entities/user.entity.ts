@@ -28,9 +28,9 @@ export class UserEntity implements User {
   @ApiProperty()
   verified!: boolean;
 
-  @ApiProperty()
+  @Exclude()
   createdAt!: Date;
 
-  @ApiProperty()
+  @Exclude()
   updatedAt!: Date;
 }

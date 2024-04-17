@@ -5,13 +5,16 @@ import {
 } from '@nestjs/common';
 import { GetPortfolioListResponse } from '../dtos/get-portfolio-list.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Portfolio, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { PortfolioEntity } from '../entities/portfolio.entity';
 import {
   CreatePortfolioRequest,
   CreatePortfolioResponse,
 } from '../dtos/create-portfolio.dto';
-import { DeletePortfolioResponse } from '../dtos/delete-portfolio.dto';
+import {
+  DeletePortfolioResponse,
+  deletePortfolioErrorMessage,
+} from '../dtos/delete-portfolio.dto';
 import {
   UpdatePortfolioRequest,
   UpdatePortfolioResponse,
@@ -81,11 +84,11 @@ export class PortfoliosService {
     });
 
     if (!portfolio) {
-      throw new NotFoundException('해당하는 포트폴리오가 없습니다.');
+      throw new NotFoundException(deletePortfolioErrorMessage.NOT_FOUND);
     }
 
     if (portfolio.userId !== user.id) {
-      throw new ForbiddenException('해당 포트폴리오를 삭제할 권한이 없습니다.');
+      throw new ForbiddenException(deletePortfolioErrorMessage.FORBIDDEN);
     }
   }
 }

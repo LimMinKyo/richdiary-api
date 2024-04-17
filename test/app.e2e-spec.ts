@@ -5,13 +5,14 @@ import request from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateDividendRequest } from '@/dividends/dtos/create-dividend.dto';
-import { User, Dividend } from '@prisma/client';
+import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateDividendRequest } from '@/dividends/dtos/update-dividend.dto';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
 import { MailService } from '@/mail/mail.service';
 import { GetDividendsMonthRequest } from '@/dividends/dtos/get-dividends-month.dto';
 import { PaginationMeta } from '@/common/dtos/pagination.dto';
+import { DividendEntity } from '@/dividends/entities/dividend.entity';
 
 const paginationMetaShape = expect.objectContaining<PaginationMeta>({
   isFirstPage: expect.any(Boolean),
@@ -31,10 +32,8 @@ describe('/api/dividends', () => {
   let otherUser: User;
   let accessToken: string;
   let otherAccessToken: string;
-  const dividendShape: Omit<Dividend, 'userId'> = expect.objectContaining({
+  const dividendShape: DividendEntity = expect.objectContaining({
     id: expect.any(Number),
-    createdAt: expect.any(String),
-    updatedAt: expect.any(String),
     dividendAt: expect.any(String),
     name: expect.any(String),
     dividend: expect.any(Number),
@@ -134,7 +133,7 @@ describe('/api/dividends', () => {
       expect(status).toBe(403);
       expect(body).toEqual({
         ok: false,
-        message: '해당 데이터를 변경할 권한이 없습니다.',
+        message: '권한이 없습니다.',
       });
     });
 
@@ -196,7 +195,7 @@ describe('/api/dividends', () => {
       expect(status).toBe(403);
       expect(body).toEqual({
         ok: false,
-        message: '해당 데이터를 삭제할 권한이 없습니다.',
+        message: '권한이 없습니다.',
       });
 
       expect(count).toBe(1);
@@ -301,16 +300,12 @@ describe('/api/users', () => {
         .get('/api/users/profile')
         .auth(accessToken, { type: 'bearer' });
 
-      const { id, password, ...rest } = user;
+      const { id, password, createdAt, updatedAt, ...rest } = user;
 
       expect(status).toBe(200);
       expect(body).toEqual({
         ok: true,
-        data: {
-          ...rest,
-          createdAt: new Date(user.createdAt).toISOString(),
-          updatedAt: new Date(user.updatedAt).toISOString(),
-        },
+        data: rest,
       });
     });
   });

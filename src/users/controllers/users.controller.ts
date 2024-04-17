@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Get, Req, Patch } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import {
+  CreateAccountBadRequestResponse,
   CreateAccountRequest,
   CreateAccountResponse,
 } from '../dto/create-account.dto';
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '@/auth/decorators/public.decorator';
 import {
+  VerifyEmailBadRequestResponse,
   VerifyEmailRequest,
   VerifyEmailResponse,
 } from '../dto/verify-email.dto';
@@ -30,19 +32,10 @@ export class UsersController {
   @Public()
   @Post()
   @ApiCreatedResponse({
-    schema: {
-      example: {
-        ok: true,
-      },
-    },
+    type: CreateAccountResponse,
   })
   @ApiBadRequestResponse({
-    schema: {
-      example: {
-        ok: false,
-        message: '해당 이메일은 이미 존재합니다.',
-      },
-    },
+    type: CreateAccountBadRequestResponse,
   })
   createAccount(
     @Body() createAccountRequest: CreateAccountRequest,
@@ -64,19 +57,10 @@ export class UsersController {
   @Public()
   @Patch('verify')
   @ApiOkResponse({
-    schema: {
-      example: {
-        ok: true,
-      },
-    },
+    type: VerifyEmailResponse,
   })
   @ApiBadRequestResponse({
-    schema: {
-      example: {
-        ok: false,
-        message: '인증코드가 유효하지 않습니다.',
-      },
-    },
+    type: VerifyEmailBadRequestResponse,
   })
   verifyEmail(
     @Body() verifyEmailRequest: VerifyEmailRequest,

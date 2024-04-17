@@ -13,13 +13,16 @@ import {
   UpdateDividendResponse,
 } from '../dtos/update-dividend.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Dividend, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import {
   GetDividendsMonthRequest,
   GetDividendsMonthResponse,
 } from '../dtos/get-dividends-month.dto';
 import dayjs from 'dayjs';
-import { DeleteDividendResponse } from '../dtos/delete-dividend.dto';
+import {
+  DeleteDividendResponse,
+  deleteDividendErrorMessage,
+} from '../dtos/delete-dividend.dto';
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
@@ -91,34 +94,14 @@ export class DividendsService {
     dividendId: number,
     updateDividendRequest: UpdateDividendRequest,
   ): Promise<UpdateDividendResponse> {
-    const dividend = await this.prisma.dividend.findFirst({
-      where: { id: dividendId },
-    });
-
-    if (!dividend) {
-      throw new NotFoundException({
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      });
-    }
-
-    if (!this.checkIsOwnDividend(user, dividend)) {
-      throw new ForbiddenException({
-        ok: false,
-        message: '해당 데이터를 변경할 권한이 없습니다.',
-      });
-    }
-
-    const dividendAt = updateDividendRequest.dividendAt
-      ? new Date(updateDividendRequest.dividendAt).toISOString()
-      : null;
-
-    delete updateDividendRequest.dividendAt;
+    await this.checkIsOwnDividend(user, dividendId);
 
     await this.prisma.dividend.update({
       data: {
         ...updateDividendRequest,
-        ...(dividendAt && { dividendAt }),
+        ...(updateDividendRequest.dividendAt && {
+          dividendAt: new Date(updateDividendRequest.dividendAt).toISOString(),
+        }),
       },
       where: { id: dividendId },
     });
@@ -129,23 +112,7 @@ export class DividendsService {
     user: User,
     dividendId: number,
   ): Promise<DeleteDividendResponse> {
-    const dividend = await this.prisma.dividend.findFirst({
-      where: { id: dividendId },
-    });
-
-    if (!dividend) {
-      throw new NotFoundException({
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      });
-    }
-
-    if (!this.checkIsOwnDividend(user, dividend)) {
-      throw new ForbiddenException({
-        ok: false,
-        message: '해당 데이터를 삭제할 권한이 없습니다.',
-      });
-    }
+    await this.checkIsOwnDividend(user, dividendId);
 
     await this.prisma.dividend.delete({
       where: {
@@ -197,11 +164,17 @@ export class DividendsService {
     };
   }
 
-  private checkIsOwnDividend(user: User, dividend: Dividend) {
-    if (user.id === dividend.userId) {
-      return true;
+  private async checkIsOwnDividend(user: User, dividendId: number) {
+    const dividend = await this.prisma.dividend.findFirst({
+      where: { id: dividendId },
+    });
+
+    if (!dividend) {
+      throw new NotFoundException(deleteDividendErrorMessage.NOT_FOUND);
     }
 
-    return false;
+    if (user.id !== dividend.userId) {
+      throw new ForbiddenException(deleteDividendErrorMessage.FORBIDDEN);
+    }
   }
 }

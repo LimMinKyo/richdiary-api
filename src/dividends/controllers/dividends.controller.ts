@@ -14,6 +14,8 @@ import {
   CreateDividendResponse,
 } from '../dtos/create-dividend.dto';
 import {
+  UpdateDividendForbiddenResponse,
+  UpdateDividendNotFoundResponse,
   UpdateDividendRequest,
   UpdateDividendResponse,
 } from '../dtos/update-dividend.dto';
@@ -23,16 +25,18 @@ import {
   GetDividendsMonthRequest,
   GetDividendsMonthResponse,
 } from '../dtos/get-dividends-month.dto';
-import { DeleteDividendResponse } from '../dtos/delete-dividend.dto';
+import {
+  DeleteDividendForbiddenResponse,
+  DeleteDividendNotFoundResponse,
+  DeleteDividendResponse,
+} from '../dtos/delete-dividend.dto';
 import {
   ApiCreatedResponse,
-  ApiExtraModels,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-  getSchemaPath,
 } from '@nestjs/swagger';
 import { DividendEntity } from '../entities/dividend.entity';
 import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
@@ -52,14 +56,8 @@ export class DividendsController {
   @ApiOperation({
     summary: '배당일지 추가',
   })
-  @ApiExtraModels(CreateDividendResponse)
   @ApiCreatedResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(CreateDividendResponse) }],
-      example: {
-        ok: true,
-      },
-    },
+    type: CreateDividendResponse,
   })
   createDividend(
     @AuthUser() user: User,
@@ -70,32 +68,14 @@ export class DividendsController {
 
   @Patch(':id')
   @ApiOperation({ summary: '배당일지 수정' })
-  @ApiExtraModels(UpdateDividendResponse)
   @ApiOkResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(UpdateDividendResponse) }],
-      example: {
-        ok: true,
-      },
-    },
+    type: UpdateDividendResponse,
   })
   @ApiForbiddenResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(UpdateDividendResponse) }],
-      example: {
-        ok: false,
-        message: '해당 데이터를 삭제할 권한이 없습니다.',
-      },
-    },
+    type: UpdateDividendForbiddenResponse,
   })
   @ApiNotFoundResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(UpdateDividendResponse) }],
-      example: {
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      },
-    },
+    type: UpdateDividendNotFoundResponse,
   })
   updateDividend(
     @AuthUser() user: User,
@@ -111,32 +91,14 @@ export class DividendsController {
 
   @Delete(':id')
   @ApiOperation({ summary: '배당일지 삭제' })
-  @ApiExtraModels(DeleteDividendResponse)
   @ApiOkResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(DeleteDividendResponse) }],
-      example: {
-        ok: true,
-      },
-    },
+    type: DeleteDividendResponse,
   })
   @ApiForbiddenResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(DeleteDividendResponse) }],
-      example: {
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      },
-    },
+    type: DeleteDividendForbiddenResponse,
   })
   @ApiNotFoundResponse({
-    schema: {
-      allOf: [{ $ref: getSchemaPath(DeleteDividendResponse) }],
-      example: {
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      },
-    },
+    type: DeleteDividendNotFoundResponse,
   })
   deleteDividend(
     @AuthUser() user: User,

@@ -10,10 +10,10 @@ export class DividendEntity implements Dividend {
   @ApiProperty()
   id!: number;
 
-  @ApiProperty()
+  @Exclude()
   createdAt!: Date;
 
-  @ApiProperty()
+  @Exclude()
   updatedAt!: Date;
 
   @ApiProperty()

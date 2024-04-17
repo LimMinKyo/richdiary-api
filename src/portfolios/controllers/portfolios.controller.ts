@@ -13,6 +13,8 @@ import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
   ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -22,8 +24,14 @@ import {
   CreatePortfolioRequest,
   CreatePortfolioResponse,
 } from '../dtos/create-portfolio.dto';
-import { DeletePortfolioResponse } from '../dtos/delete-portfolio.dto';
 import {
+  DeletePortfolioForbiddenResponse,
+  DeletePortfolioNotFoundResponse,
+  DeletePortfolioResponse,
+} from '../dtos/delete-portfolio.dto';
+import {
+  UpdatePortfolioForbiddenResponse,
+  UpdatePortfolioNotFoundResponse,
   UpdatePortfolioRequest,
   UpdatePortfolioResponse,
 } from '../dtos/update-portfolio.dto';
@@ -59,6 +67,8 @@ export class PortfoliosController {
   @Patch(':id')
   @ApiOperation({ summary: '포트폴리오 수정' })
   @ApiOkResponse({ type: UpdatePortfolioResponse })
+  @ApiForbiddenResponse({ type: UpdatePortfolioForbiddenResponse })
+  @ApiNotFoundResponse({ type: UpdatePortfolioNotFoundResponse })
   async updatePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: number,
@@ -74,6 +84,8 @@ export class PortfoliosController {
   @Delete(':id')
   @ApiOperation({ summary: '포트폴리오 삭제' })
   @ApiOkResponse({ type: DeletePortfolioResponse })
+  @ApiForbiddenResponse({ type: DeletePortfolioForbiddenResponse })
+  @ApiNotFoundResponse({ type: DeletePortfolioNotFoundResponse })
   async deletePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: number,
