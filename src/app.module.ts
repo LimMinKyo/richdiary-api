@@ -8,7 +8,6 @@ import { DividendsModule } from './dividends/dividends.module';
 import Joi from 'joi';
 import { AppController } from './app.controller';
 import { CommonModule } from './common/common.module';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { PortfoliosModule } from './portfolios/portfolios.module';
@@ -42,9 +41,6 @@ import { PortfoliosModule } from './portfolios/portfolios.module';
         EXCHANGE_APP_ID: Joi.string().required(),
       }),
     }),
-    CacheModule.register({
-      isGlobal: true,
-    }),
     RedisModule.forRoot({
       readyLog: true,
       config: {
@@ -61,10 +57,6 @@ import { PortfoliosModule } from './portfolios/portfolios.module';
     PortfoliosModule,
   ],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
     {
       provide: APP_INTERCEPTOR,
       inject: [Reflector],
