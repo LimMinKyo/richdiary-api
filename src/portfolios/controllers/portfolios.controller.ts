@@ -13,6 +13,7 @@ import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
   ApiCreatedResponse,
+  ApiExcludeController,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,6 +37,7 @@ import {
   UpdatePortfolioResponse,
 } from '../dtos/update-portfolio.dto';
 
+@ApiExcludeController()
 @ApiAuthRequired()
 @ApiTags('포트폴리오 API')
 @Controller('api/portfolios')
