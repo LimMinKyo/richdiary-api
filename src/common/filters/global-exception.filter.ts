@@ -7,50 +7,48 @@ import {
   Logger,
 } from '@nestjs/common';
 import { ResponseDto } from '../dtos/response.dto';
+import { Prisma } from '@prisma/client';
+import { Request, Response } from 'express';
 
 @Catch()
-export class GlobalExceptionFilter implements ExceptionFilter<HttpException> {
-  logger = new Logger(GlobalExceptionFilter.name);
+export class GlobalExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const req = ctx.getRequest();
-    const res = ctx.getResponse();
-    const statusCode = this.getHttpStatus(exception);
-    // const dateTime = new Date();
-
-    const message =
-      exception instanceof HttpException
-        ? exception.message
-        : 'INTERNAL_SERVER_ERROR';
+    const request = ctx.getRequest<Request>();
+    const response = ctx.getResponse<Response>();
+    const { statusCode, message } = this.getStatusCodeAndMessage(exception);
 
     const error: ResponseDto = {
       ok: false,
       message,
     };
 
-    const errorResponse = {
-      ...error,
-      // code: statusCode,
-      // timestamp: dateTime,
-      // path: req.url,
-      // method: req.method,
-    };
-
-    if (exception instanceof HttpException) {
-      this.logger.warn({ err: errorResponse });
-    } else {
-      this.logger.error({ err: errorResponse, args: { req, res } });
-    }
-
-    res.status(statusCode).json(errorResponse);
+    this.logger.error(error);
+    response.status(statusCode).json(error);
   }
 
-  private getHttpStatus(exception: unknown): HttpStatus {
+  /**
+   * Http Status 코드와 error message 가져오기
+   */
+  private getStatusCodeAndMessage(exception: unknown) {
+    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'INTERNAL_SERVER_ERROR';
+
     if (exception instanceof HttpException) {
-      return exception.getStatus();
-    } else {
-      return HttpStatus.INTERNAL_SERVER_ERROR;
+      statusCode = exception.getStatus();
+      message = exception.message;
+    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      if (exception.code === 'P2002') {
+        statusCode = HttpStatus.CONFLICT;
+        message = exception.message.replace(/\n/g, '');
+      }
     }
+
+    return {
+      statusCode,
+      message,
+    };
   }
 }
