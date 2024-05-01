@@ -12,8 +12,6 @@ services:
       - postgres
       - redis
     restart: on-failure
-    networks:
-      - richdiary-network
 
   postgres:
     image: postgres:16.2-alpine3.19
@@ -26,8 +24,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    networks:
-      - richdiary-network
 
   redis:
     image: redis:alpine
@@ -36,14 +32,8 @@ services:
       - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data
-    networks:
-      - richdiary-network
 
 
 volumes:
   postgres-data:
   redis_data:
-
-networks:
-  richdiary-network:
-    driver: bridge
