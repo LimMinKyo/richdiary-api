@@ -20,12 +20,14 @@ model User {
   updatedAt    DateTime      @updatedAt @db.Timestamptz()
   name         String
   email        String        @unique
+  /// Provider가 LOCAL이 아닐 경우 null
   password     String?
   provider     Provider
   verified     Boolean       @default(false)
   verification Verification?
   dividends    Dividend[]
-  Portfolio    Portfolio[]
+  Portfolios   Portfolio[]
+  StockRecords StockRecord[]
 }
 
 model Verification {
@@ -60,6 +62,20 @@ model Dividend {
   userId      Int
   portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
   portfolioId Int?
+}
+
+model StockRecord {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now()) @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @db.Timestamptz()
+  recordAt     DateTime @db.Timestamptz()
+  companyName  String
+  quantity     Float
+  unit         Unit
+  buyPrice     Float
+  currentPrice Float
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
 }
 
 model Exchange {

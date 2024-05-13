@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { PortfoliosModule } from './portfolios/portfolios.module';
+import { StockRecordsModule } from './stock-records/stock-records.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { PortfoliosModule } from './portfolios/portfolios.module';
     DividendsModule,
     CommonModule,
     PortfoliosModule,
+    StockRecordsModule,
   ],
   providers: [
     {
