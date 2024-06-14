@@ -9,11 +9,18 @@ generator kysely {
   enumFileName = "enums.ts"
 }
 
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../docs/ERD.md"
+  title    = "Rich Diary"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+/// @namespace 부자일기
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   createdAt    DateTime      @default(now()) @db.Timestamptz()
@@ -30,6 +37,7 @@ model User {
   StockRecords StockRecord[]
 }
 
+/// @namespace 부자일기
 model Verification {
   id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz()
@@ -39,6 +47,7 @@ model Verification {
   userId    String   @unique @db.Uuid
 }
 
+/// @namespace 부자일기
 model Portfolio {
   id        String     @id @default(uuid()) @db.Uuid
   createdAt DateTime   @default(now()) @db.Timestamptz()
@@ -49,6 +58,7 @@ model Portfolio {
   Dividend  Dividend[]
 }
 
+/// @namespace 부자일기
 model Dividend {
   id          String     @id @default(uuid()) @db.Uuid
   createdAt   DateTime   @default(now()) @db.Timestamptz()
@@ -64,6 +74,7 @@ model Dividend {
   portfolioId String?    @db.Uuid
 }
 
+/// @namespace 부자일기
 model StockRecord {
   id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now()) @db.Timestamptz()
@@ -78,6 +89,7 @@ model StockRecord {
   userId       String   @db.Uuid
 }
 
+/// @namespace 부자일기
 model Exchange {
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt @db.Timestamptz()
