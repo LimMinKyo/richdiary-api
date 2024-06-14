@@ -1,6 +1,6 @@
 # 부자일기 (Backend)
 
-## [ERD](https://www.erdcloud.com/d/wvHZXTAu79p6Rirkn)
+## [ERD](./docs/ERD.md)
 
 ## 기술스택
 
