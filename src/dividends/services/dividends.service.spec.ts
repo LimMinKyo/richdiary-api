@@ -9,7 +9,7 @@ import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { ConfigService } from '@nestjs/config';
 
 const mockUser: User = {
-  id: 1,
+  id: '1',
   createdAt: new Date(),
   updatedAt: new Date(),
   name: '홍길동',
@@ -20,7 +20,7 @@ const mockUser: User = {
 };
 
 const mockDividend: Dividend = {
-  id: 1,
+  id: '2',
   createdAt: new Date(),
   updatedAt: new Date(),
   dividendAt: new Date(),
@@ -87,7 +87,7 @@ describe('DividendsService', () => {
       prisma.dividend.findFirst.mockResolvedValue(mockDividend);
 
       // when
-      const result = await service.deleteDividend(mockUser, 1);
+      const result = await service.deleteDividend(mockUser, mockDividend.id);
 
       // then
       expect(result).toEqual({ ok: true });

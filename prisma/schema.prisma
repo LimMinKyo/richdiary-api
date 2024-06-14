@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
+  id           String        @id @default(uuid()) @db.Uuid
   createdAt    DateTime      @default(now()) @db.Timestamptz()
   updatedAt    DateTime      @updatedAt @db.Timestamptz()
   name         String
@@ -31,26 +31,26 @@ model User {
 }
 
 model Verification {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz()
   updatedAt DateTime @updatedAt @db.Timestamptz()
   code      String   @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
-  userId    Int      @unique
+  userId    String   @unique @db.Uuid
 }
 
 model Portfolio {
-  id        Int        @id @default(autoincrement())
+  id        String     @id @default(uuid()) @db.Uuid
   createdAt DateTime   @default(now()) @db.Timestamptz()
   updatedAt DateTime   @updatedAt @db.Timestamptz()
   name      String
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
+  userId    String     @db.Uuid
   Dividend  Dividend[]
 }
 
 model Dividend {
-  id          Int        @id @default(autoincrement())
+  id          String     @id @default(uuid()) @db.Uuid
   createdAt   DateTime   @default(now()) @db.Timestamptz()
   updatedAt   DateTime   @updatedAt @db.Timestamptz()
   dividendAt  DateTime   @db.Timestamptz()
@@ -59,13 +59,13 @@ model Dividend {
   dividend    Float
   tax         Float
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
+  userId      String     @db.Uuid
   portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
-  portfolioId Int?
+  portfolioId String?    @db.Uuid
 }
 
 model StockRecord {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid()) @db.Uuid
   createdAt    DateTime @default(now()) @db.Timestamptz()
   updatedAt    DateTime @updatedAt @db.Timestamptz()
   recordAt     DateTime @db.Timestamptz()
@@ -75,7 +75,7 @@ model StockRecord {
   buyPrice     Float
   currentPrice Float
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       Int
+  userId       String   @db.Uuid
 }
 
 model Exchange {

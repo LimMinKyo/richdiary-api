@@ -84,7 +84,7 @@ export class DividendsController {
   ): Promise<UpdateDividendResponse> {
     return this.dividendsService.updateDividend(
       user,
-      +id,
+      id,
       updateDividendRequest,
     );
   }
@@ -104,7 +104,7 @@ export class DividendsController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<DeleteDividendResponse> {
-    return this.dividendsService.deleteDividend(user, +id);
+    return this.dividendsService.deleteDividend(user, id);
   }
 
   @Get('month')

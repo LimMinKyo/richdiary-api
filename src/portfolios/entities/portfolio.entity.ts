@@ -8,13 +8,13 @@ export class PortfolioEntity implements Portfolio {
   }
 
   @ApiProperty()
-  id!: number;
+  id!: string;
 
   @ApiProperty()
   name!: string;
 
   @Exclude()
-  userId!: number;
+  userId!: string;
 
   @Exclude()
   createdAt!: Date;

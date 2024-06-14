@@ -75,7 +75,7 @@ export class UsersService {
     return user;
   }
 
-  async findOneById(id: number): Promise<User | null> {
+  async findOneById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: { id },
     });

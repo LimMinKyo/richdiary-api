@@ -54,7 +54,7 @@ export class PortfoliosService {
 
   async updatePortfolio(
     user: User,
-    portfolioId: number,
+    portfolioId: string,
     { name }: UpdatePortfolioRequest,
   ): Promise<UpdatePortfolioResponse> {
     await this.checkIsOwnPortfolio(user, portfolioId);
@@ -69,7 +69,7 @@ export class PortfoliosService {
 
   async deletePortfolio(
     user: User,
-    portfolioId: number,
+    portfolioId: string,
   ): Promise<DeletePortfolioResponse> {
     await this.checkIsOwnPortfolio(user, portfolioId);
 
@@ -78,7 +78,7 @@ export class PortfoliosService {
     return { ok: true };
   }
 
-  private async checkIsOwnPortfolio(user: User, portfolioId: number) {
+  private async checkIsOwnPortfolio(user: User, portfolioId: string) {
     const portfolio = await this.prisma.portfolio.findUnique({
       where: { id: portfolioId },
     });

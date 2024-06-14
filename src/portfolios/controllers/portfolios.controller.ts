@@ -73,7 +73,7 @@ export class PortfoliosController {
   @ApiNotFoundResponse({ type: UpdatePortfolioNotFoundResponse })
   async updatePortfolio(
     @AuthUser() user: User,
-    @Param('id') portfolioId: number,
+    @Param('id') portfolioId: string,
     @Body() updatePortfolioRequest: UpdatePortfolioRequest,
   ): Promise<UpdatePortfolioResponse> {
     return await this.portfolioService.updatePortfolio(
@@ -90,7 +90,7 @@ export class PortfoliosController {
   @ApiNotFoundResponse({ type: DeletePortfolioNotFoundResponse })
   async deletePortfolio(
     @AuthUser() user: User,
-    @Param('id') portfolioId: number,
+    @Param('id') portfolioId: string,
   ): Promise<DeletePortfolioResponse> {
     return await this.portfolioService.deletePortfolio(user, portfolioId);
   }

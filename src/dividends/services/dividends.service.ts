@@ -91,7 +91,7 @@ export class DividendsService {
 
   async updateDividend(
     user: User,
-    dividendId: number,
+    dividendId: string,
     updateDividendRequest: UpdateDividendRequest,
   ): Promise<UpdateDividendResponse> {
     await this.checkIsOwnDividend(user, dividendId);
@@ -110,7 +110,7 @@ export class DividendsService {
 
   async deleteDividend(
     user: User,
-    dividendId: number,
+    dividendId: string,
   ): Promise<DeleteDividendResponse> {
     await this.checkIsOwnDividend(user, dividendId);
 
@@ -164,7 +164,7 @@ export class DividendsService {
     };
   }
 
-  private async checkIsOwnDividend(user: User, dividendId: number) {
+  private async checkIsOwnDividend(user: User, dividendId: string) {
     const dividend = await this.prisma.dividend.findFirst({
       where: { id: dividendId },
     });

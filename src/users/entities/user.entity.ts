@@ -8,7 +8,7 @@ export class UserEntity implements User {
   }
 
   @Exclude()
-  id!: number;
+  id!: string;
 
   @ApiProperty()
   name!: string;

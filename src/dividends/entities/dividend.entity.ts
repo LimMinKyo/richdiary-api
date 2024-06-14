@@ -8,7 +8,7 @@ export class DividendEntity implements Dividend {
   }
 
   @ApiProperty()
-  id!: number;
+  id!: string;
 
   @Exclude()
   createdAt!: Date;
@@ -32,8 +32,8 @@ export class DividendEntity implements Dividend {
   unit!: Unit;
 
   @Exclude()
-  userId!: number;
+  userId!: string;
 
   @Exclude()
-  portfolioId!: number | null;
+  portfolioId!: string | null;
 }
