@@ -1,13 +1,26 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
 import {
   CreateStockRecordRequest,
   CreateStockRecordResponse,
 } from '../dtos/create-stock-record.dto';
 import { StockRecordsService } from '../services/stock-records.service';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
 import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
+import {
+  UpdateStockRecordForbiddenResponse,
+  UpdateStockRecordNotFoundResponse,
+  UpdateStockRecordRequest,
+  UpdateStockRecordResponse,
+} from '../dtos/update-stock-record.dto';
 
 @ApiAuthRequired()
 @ApiTags('주식투자기록 API')
@@ -29,6 +42,29 @@ export class StockRecordsController {
     return this.stockRecordsService.createStockRecord(
       user,
       createDividendRequest,
+    );
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '주식투자기록 수정' })
+  @ApiOkResponse({
+    type: UpdateStockRecordResponse,
+  })
+  @ApiForbiddenResponse({
+    type: UpdateStockRecordForbiddenResponse,
+  })
+  @ApiNotFoundResponse({
+    type: UpdateStockRecordNotFoundResponse,
+  })
+  updateStockRecord(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+    @Body() updateStockRecordRequest: UpdateStockRecordRequest,
+  ): Promise<UpdateStockRecordResponse> {
+    return this.stockRecordsService.updateStockRecord(
+      user,
+      id,
+      updateStockRecordRequest,
     );
   }
 }
