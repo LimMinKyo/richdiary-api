@@ -9,7 +9,6 @@ import Joi from 'joi';
 import { AppController } from './app.controller';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { PortfoliosModule } from './portfolios/portfolios.module';
 import { StockRecordsModule } from './stock-records/stock-records.module';
 
@@ -41,13 +40,6 @@ import { StockRecordsModule } from './stock-records/stock-records.module';
         REDIS_PORT: Joi.string().required(),
         EXCHANGE_APP_ID: Joi.string().required(),
       }),
-    }),
-    RedisModule.forRoot({
-      readyLog: true,
-      config: {
-        host: process.env.REDIS_HOST,
-        port: +(process.env.REDIS_PORT || 6379),
-      },
     }),
     PrismaModule,
     UsersModule,
