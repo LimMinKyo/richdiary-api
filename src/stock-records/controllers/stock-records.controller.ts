@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import {
   CreateStockRecordRequest,
   CreateStockRecordResponse,
@@ -21,6 +21,11 @@ import {
   UpdateStockRecordRequest,
   UpdateStockRecordResponse,
 } from '../dtos/update-stock-record.dto';
+import {
+  DeleteStockRecordForbiddenResponse,
+  DeleteStockRecordNotFoundResponse,
+  DeleteStockRecordResponse,
+} from '../dtos/delete-stock-record.dto';
 
 @ApiAuthRequired()
 @ApiTags('주식투자기록 API')
@@ -66,5 +71,23 @@ export class StockRecordsController {
       id,
       updateStockRecordRequest,
     );
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '주식투자기록 삭제' })
+  @ApiOkResponse({
+    type: DeleteStockRecordResponse,
+  })
+  @ApiForbiddenResponse({
+    type: DeleteStockRecordForbiddenResponse,
+  })
+  @ApiNotFoundResponse({
+    type: DeleteStockRecordNotFoundResponse,
+  })
+  deleteStockRecord(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<DeleteStockRecordResponse> {
+    return this.stockRecordsService.deleteStockRecord(user, id);
   }
 }

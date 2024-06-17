@@ -15,6 +15,7 @@ import {
   UpdateStockRecordResponse,
   updateStockRecordErrorMessage,
 } from '../dtos/update-stock-record.dto';
+import { DeleteStockRecordResponse } from '../dtos/delete-stock-record.dto';
 
 @Injectable()
 export class StockRecordsService {
@@ -53,6 +54,21 @@ export class StockRecordsService {
       },
       where: { id: stockRecordId },
     });
+    return { ok: true };
+  }
+
+  async deleteStockRecord(
+    user: User,
+    stockRecordId: string,
+  ): Promise<DeleteStockRecordResponse> {
+    await this.checkIsOwnStockRecord(user, stockRecordId);
+
+    await this.prisma.stockRecord.delete({
+      where: {
+        id: stockRecordId,
+      },
+    });
+
     return { ok: true };
   }
 
