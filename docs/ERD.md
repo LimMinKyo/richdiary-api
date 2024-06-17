@@ -118,12 +118,12 @@ erDiagram
   - `id`: 
   - `createdAt`: 
   - `updatedAt`: 
-  - `recordAt`: 
-  - `companyName`: 
-  - `quantity`: 
+  - `recordAt`: 기록일
+  - `companyName`: 회사명
+  - `quantity`: 보유주식수
   - `unit`: 
-  - `buyPrice`: 
-  - `currentPrice`: 
+  - `buyPrice`: 구매가
+  - `currentPrice`: 현재가
   - `userId`: 
 
 ### `Exchange`
