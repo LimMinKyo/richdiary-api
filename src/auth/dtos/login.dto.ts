@@ -12,12 +12,12 @@ export class LoginRequest {
   password!: string;
 }
 
-class Data {
+export class LoginResponseData {
   @ApiProperty()
   accessToken!: string;
 }
 
-export class LoginResponse extends ResponseDto<Data> {
-  @ApiProperty({ type: Data })
-  data!: Data;
+export class LoginResponse extends ResponseDto<LoginResponseData> {
+  @ApiProperty({ type: LoginResponseData })
+  data!: LoginResponseData;
 }

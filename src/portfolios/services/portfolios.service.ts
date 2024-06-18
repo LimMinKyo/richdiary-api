@@ -24,7 +24,7 @@ import {
 export class PortfoliosService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPortfolioList(user: User): Promise<GetPortfolioListResponse> {
+  async getPortfolioList(user: User): Promise<PortfolioEntity[]> {
     const data = await this.prisma.portfolio
       .findMany({
         where: {
@@ -35,47 +35,38 @@ export class PortfoliosService {
         portfolios.map((portfolio) => new PortfolioEntity(portfolio)),
       );
 
-    return { ok: true, data };
+    return data;
   }
 
   async createPortfolio(
     user: User,
     { name }: CreatePortfolioRequest,
-  ): Promise<CreatePortfolioResponse> {
-    const data = await this.prisma.portfolio.create({
+  ): Promise<void> {
+    await this.prisma.portfolio.create({
       data: {
         name,
         userId: user.id,
       },
     });
-
-    return { ok: true, data: new PortfolioEntity(data) };
   }
 
   async updatePortfolio(
     user: User,
     portfolioId: string,
     { name }: UpdatePortfolioRequest,
-  ): Promise<UpdatePortfolioResponse> {
+  ): Promise<void> {
     await this.checkIsOwnPortfolio(user, portfolioId);
 
-    const data = await this.prisma.portfolio.update({
+    await this.prisma.portfolio.update({
       where: { id: portfolioId },
       data: { name },
     });
-
-    return { ok: true, data: new PortfolioEntity(data) };
   }
 
-  async deletePortfolio(
-    user: User,
-    portfolioId: string,
-  ): Promise<DeletePortfolioResponse> {
+  async deletePortfolio(user: User, portfolioId: string): Promise<void> {
     await this.checkIsOwnPortfolio(user, portfolioId);
 
     await this.prisma.portfolio.delete({ where: { id: portfolioId } });
-
-    return { ok: true };
   }
 
   private async checkIsOwnPortfolio(user: User, portfolioId: string) {

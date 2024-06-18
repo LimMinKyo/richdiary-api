@@ -36,6 +36,7 @@ import {
   UpdatePortfolioRequest,
   UpdatePortfolioResponse,
 } from '../dtos/update-portfolio.dto';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @ApiExcludeController()
 @ApiAuthRequired()
@@ -50,7 +51,8 @@ export class PortfoliosController {
   async getPortfolioList(
     @AuthUser() user: User,
   ): Promise<GetPortfolioListResponse> {
-    return await this.portfolioService.getPortfolioList(user);
+    const data = await this.portfolioService.getPortfolioList(user);
+    return ResponseDto.OK_WITH(data);
   }
 
   @Post()
@@ -58,12 +60,10 @@ export class PortfoliosController {
   @ApiCreatedResponse({ type: CreatePortfolioResponse })
   async createPortfolio(
     @AuthUser() user: User,
-    @Body() createPortfolioRequest: CreatePortfolioRequest,
+    @Body() body: CreatePortfolioRequest,
   ): Promise<CreatePortfolioResponse> {
-    return await this.portfolioService.createPortfolio(
-      user,
-      createPortfolioRequest,
-    );
+    await this.portfolioService.createPortfolio(user, body);
+    return ResponseDto.OK();
   }
 
   @Patch(':id')
@@ -74,13 +74,10 @@ export class PortfoliosController {
   async updatePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
-    @Body() updatePortfolioRequest: UpdatePortfolioRequest,
+    @Body() body: UpdatePortfolioRequest,
   ): Promise<UpdatePortfolioResponse> {
-    return await this.portfolioService.updatePortfolio(
-      user,
-      portfolioId,
-      updatePortfolioRequest,
-    );
+    await this.portfolioService.updatePortfolio(user, portfolioId, body);
+    return ResponseDto.OK();
   }
 
   @Delete(':id')
@@ -92,6 +89,7 @@ export class PortfoliosController {
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
   ): Promise<DeletePortfolioResponse> {
-    return await this.portfolioService.deletePortfolio(user, portfolioId);
+    await this.portfolioService.deletePortfolio(user, portfolioId);
+    return ResponseDto.OK();
   }
 }

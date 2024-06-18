@@ -6,6 +6,7 @@ import {
   GetExchangeRateRequest,
   GetExchangeRateResponse,
 } from '../dtos/get-exchange-rate.dto';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @ApiTags('환율 API')
 @Controller('api/exchanges')
@@ -18,9 +19,10 @@ export class ExchangesController {
     summary: '환율 조회',
   })
   @ApiOkResponse({ type: GetExchangeRateResponse })
-  getExchangeRate(
+  async getExchangeRate(
     @Query() { searchDate }: GetExchangeRateRequest,
   ): Promise<GetExchangeRateResponse> {
-    return this.exchnagesService.getExchangeRate(searchDate);
+    const data = await this.exchnagesService.getExchangeRate(searchDate);
+    return ResponseDto.OK_WITH(data);
   }
 }

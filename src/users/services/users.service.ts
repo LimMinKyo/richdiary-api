@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   CreateAccountRequest,
-  CreateAccountResponse,
   createAccountErrorMessage,
 } from '../dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -9,11 +8,9 @@ import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
 import {
   VerifyEmailRequest,
-  VerifyEmailResponse,
   verifyEmailErrorMessage,
 } from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
-import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
 import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
@@ -27,7 +24,7 @@ export class UsersService {
     name,
     email,
     password,
-  }: CreateAccountRequest): Promise<CreateAccountResponse> {
+  }: CreateAccountRequest): Promise<void> {
     const user = await this.findOneByEmail(email);
 
     if (user) {
@@ -50,17 +47,10 @@ export class UsersService {
       newUser.email,
       verification.code,
     );
-
-    return {
-      ok: true,
-    };
   }
 
-  getMyProfile(user: User): GetMyProfileResponse {
-    return {
-      ok: true,
-      data: new UserEntity(user),
-    };
+  getMyProfile(user: User): UserEntity {
+    return new UserEntity(user);
   }
 
   async findOneByEmail(email: string): Promise<User | null> {
@@ -109,9 +99,7 @@ export class UsersService {
     return newUser;
   }
 
-  async verifyEmail({
-    code,
-  }: VerifyEmailRequest): Promise<VerifyEmailResponse> {
+  async verifyEmail({ code }: VerifyEmailRequest): Promise<void> {
     const verification = await this.prisma.verification.findFirst({
       where: { code },
       include: { user: true },
@@ -127,9 +115,5 @@ export class UsersService {
     });
 
     await this.prisma.verification.delete({ where: { id: verification.id } });
-
-    return {
-      ok: true,
-    };
   }
 }

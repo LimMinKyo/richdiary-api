@@ -3,24 +3,17 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  CreateStockRecordRequest,
-  CreateStockRecordResponse,
-} from '../dtos/create-stock-record.dto';
+import { CreateStockRecordRequest } from '../dtos/create-stock-record.dto';
 import { User } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import dayjs from 'dayjs';
 import {
   UpdateStockRecordRequest,
-  UpdateStockRecordResponse,
   updateStockRecordErrorMessage,
 } from '../dtos/update-stock-record.dto';
-import { DeleteStockRecordResponse } from '../dtos/delete-stock-record.dto';
-import {
-  GetStockRecordListRequest,
-  GetStockRecordListResponse,
-} from '../dtos/get-dividend-list.dto';
+import { GetStockRecordsRequest } from '../dtos/get-stock-records.dto';
 import { StockRecordEntity } from '../entities/stock-record.entity';
+import { PaginationData } from '@/common/dtos/pagination.dto';
 
 @Injectable()
 export class StockRecordsService {
@@ -29,7 +22,7 @@ export class StockRecordsService {
   async createStockRecord(
     user: User,
     createStockRecordRequest: CreateStockRecordRequest,
-  ): Promise<CreateStockRecordResponse> {
+  ): Promise<void> {
     await this.prisma.stockRecord.create({
       data: {
         ...createStockRecordRequest,
@@ -37,17 +30,13 @@ export class StockRecordsService {
         userId: user.id,
       },
     });
-
-    return {
-      ok: true,
-    };
   }
 
   async updateStockRecord(
     user: User,
     stockRecordId: string,
     updateStockRecordRequest: UpdateStockRecordRequest,
-  ): Promise<UpdateStockRecordResponse> {
+  ): Promise<void> {
     await this.checkIsOwnStockRecord(user, stockRecordId);
 
     await this.prisma.stockRecord.update({
@@ -59,13 +48,9 @@ export class StockRecordsService {
       },
       where: { id: stockRecordId },
     });
-    return { ok: true };
   }
 
-  async deleteStockRecord(
-    user: User,
-    stockRecordId: string,
-  ): Promise<DeleteStockRecordResponse> {
+  async deleteStockRecord(user: User, stockRecordId: string): Promise<void> {
     await this.checkIsOwnStockRecord(user, stockRecordId);
 
     await this.prisma.stockRecord.delete({
@@ -73,14 +58,12 @@ export class StockRecordsService {
         id: stockRecordId,
       },
     });
-
-    return { ok: true };
   }
 
   async getStockRecordList(
     user: User,
-    { date, page = 1, perPage = 10 }: GetStockRecordListRequest,
-  ): Promise<GetStockRecordListResponse> {
+    { date, page = 1, perPage = 10 }: GetStockRecordsRequest,
+  ): Promise<PaginationData<StockRecordEntity>> {
     const [result, meta] = await this.prisma.paginator.stockRecord
       .paginate({
         where: {
@@ -104,12 +87,8 @@ export class StockRecordsService {
     );
 
     return {
-      ok: true,
       data,
-      meta: {
-        ...meta,
-        perPage,
-      },
+      meta,
     };
   }
 

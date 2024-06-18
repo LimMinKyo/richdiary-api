@@ -45,6 +45,7 @@ import {
   GetDividendsYearRequest,
   GetDividendsYearResponse,
 } from '../dtos/get-dividends-year.dto';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @ApiAuthRequired()
 @ApiTags('배당일지 API')
@@ -59,11 +60,12 @@ export class DividendsController {
   @ApiCreatedResponse({
     type: CreateDividendResponse,
   })
-  createDividend(
+  async createDividend(
     @AuthUser() user: User,
-    @Body() createDividendRequest: CreateDividendRequest,
+    @Body() body: CreateDividendRequest,
   ): Promise<CreateDividendResponse> {
-    return this.dividendsService.createDividend(user, createDividendRequest);
+    await this.dividendsService.createDividend(user, body);
+    return ResponseDto.OK();
   }
 
   @Patch(':id')
@@ -77,16 +79,13 @@ export class DividendsController {
   @ApiNotFoundResponse({
     type: UpdateDividendNotFoundResponse,
   })
-  updateDividend(
+  async updateDividend(
     @AuthUser() user: User,
     @Param('id') id: string,
-    @Body() updateDividendRequest: UpdateDividendRequest,
+    @Body() body: UpdateDividendRequest,
   ): Promise<UpdateDividendResponse> {
-    return this.dividendsService.updateDividend(
-      user,
-      id,
-      updateDividendRequest,
-    );
+    await this.dividendsService.updateDividend(user, id, body);
+    return ResponseDto.OK();
   }
 
   @Delete(':id')
@@ -100,21 +99,23 @@ export class DividendsController {
   @ApiNotFoundResponse({
     type: DeleteDividendNotFoundResponse,
   })
-  deleteDividend(
+  async deleteDividend(
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<DeleteDividendResponse> {
-    return this.dividendsService.deleteDividend(user, id);
+    await this.dividendsService.deleteDividend(user, id);
+    return ResponseDto.OK();
   }
 
   @Get('month')
   @ApiOperation({ summary: '배당일지 조회' })
   @ApiOkResponsePaginated(DividendEntity)
-  getDividends(
+  async getDividends(
     @AuthUser() user: User,
-    @Query() getDividendsRequest: GetDividendsMonthRequest,
+    @Query() query: GetDividendsMonthRequest,
   ): Promise<GetDividendsMonthResponse> {
-    return this.dividendsService.getDividends(user, getDividendsRequest);
+    const data = await this.dividendsService.getDividendsMonth(user, query);
+    return ResponseDto.OK_WITH(data);
   }
 
   @Get('year')
@@ -122,11 +123,9 @@ export class DividendsController {
   @ApiOkResponse({ type: GetDividendsYearResponse })
   async getDividendsYear(
     @AuthUser() user: User,
-    @Query() getDividendsYearRequest: GetDividendsYearRequest,
+    @Query() query: GetDividendsYearRequest,
   ): Promise<GetDividendsYearResponse> {
-    return this.dividendsService.getDividendsYear(
-      user,
-      getDividendsYearRequest,
-    );
+    const data = await this.dividendsService.getDividendsYear(user, query);
+    return ResponseDto.OK_WITH(data);
   }
 }

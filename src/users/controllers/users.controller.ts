@@ -22,6 +22,7 @@ import {
 import { User } from '@prisma/client';
 import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -37,10 +38,11 @@ export class UsersController {
   @ApiBadRequestResponse({
     type: CreateAccountBadRequestResponse,
   })
-  createAccount(
+  async createAccount(
     @Body() createAccountRequest: CreateAccountRequest,
   ): Promise<CreateAccountResponse> {
-    return this.usersService.createAccount(createAccountRequest);
+    await this.usersService.createAccount(createAccountRequest);
+    return ResponseDto.OK();
   }
 
   @ApiOperation({ summary: '내정보 조회' })
@@ -50,7 +52,8 @@ export class UsersController {
   })
   @Get('profile')
   getMyProfile(@Req() req: Request & { user: User }): GetMyProfileResponse {
-    return this.usersService.getMyProfile(req.user);
+    const data = this.usersService.getMyProfile(req.user);
+    return ResponseDto.OK_WITH(data);
   }
 
   @ApiOperation({ summary: '이메일 인증' })
@@ -62,9 +65,10 @@ export class UsersController {
   @ApiBadRequestResponse({
     type: VerifyEmailBadRequestResponse,
   })
-  verifyEmail(
+  async verifyEmail(
     @Body() verifyEmailRequest: VerifyEmailRequest,
   ): Promise<VerifyEmailResponse> {
-    return this.usersService.verifyEmail(verifyEmailRequest);
+    await this.usersService.verifyEmail(verifyEmailRequest);
+    return ResponseDto.OK();
   }
 }

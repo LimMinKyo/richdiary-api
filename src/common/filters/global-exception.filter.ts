@@ -18,36 +18,33 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const { statusCode, message } = this.getStatusCodeAndMessage(exception);
+    const { httpStatus, message } = this.getStatusCodeAndMessage(exception);
 
-    const error: ResponseDto = {
-      ok: false,
-      message,
-    };
+    const error = ResponseDto.ERROR_WITH(message);
 
     this.logger.error(error);
-    response.status(statusCode).json(error);
+    response.status(httpStatus).json(error);
   }
 
   /**
    * Http Status 코드와 error message 가져오기
    */
   private getStatusCodeAndMessage(exception: unknown) {
-    let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    let httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'INTERNAL_SERVER_ERROR';
 
     if (exception instanceof HttpException) {
-      statusCode = exception.getStatus();
+      httpStatus = exception.getStatus();
       message = exception.message;
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === 'P2002') {
-        statusCode = HttpStatus.CONFLICT;
+        httpStatus = HttpStatus.CONFLICT;
         message = exception.message.replace(/\n/g, '');
       }
     }
 
     return {
-      statusCode,
+      httpStatus,
       message,
     };
   }

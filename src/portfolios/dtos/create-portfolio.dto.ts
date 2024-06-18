@@ -10,7 +10,4 @@ export class CreatePortfolioRequest extends PickType(PortfolioEntity, [
   name!: string;
 }
 
-export class CreatePortfolioResponse extends ResponseDto<PortfolioEntity> {
-  @ApiProperty({ type: PortfolioEntity })
-  data!: PortfolioEntity;
-}
+export class CreatePortfolioResponse extends ResponseDto {}

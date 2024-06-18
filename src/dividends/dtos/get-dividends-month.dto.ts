@@ -3,7 +3,7 @@ import { DividendEntity } from '../entities/dividend.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   PaginationRequest,
-  PaginationResponse,
+  PaginationResponseDto,
 } from '@/common/dtos/pagination.dto';
 
 export class GetDividendsMonthRequest extends PaginationRequest {
@@ -13,4 +13,4 @@ export class GetDividendsMonthRequest extends PaginationRequest {
   date!: string;
 }
 
-export class GetDividendsMonthResponse extends PaginationResponse<DividendEntity> {}
+export class GetDividendsMonthResponse extends PaginationResponseDto<DividendEntity> {}

@@ -19,7 +19,6 @@ const paginationMetaShape = expect.objectContaining<PaginationMeta>({
   nextPage: expect.toBeOneOf([expect.any(Number), null]),
   pageCount: expect.any(Number),
   totalCount: expect.any(Number),
-  perPage: expect.any(Number),
 });
 
 describe('/api/dividends', () => {

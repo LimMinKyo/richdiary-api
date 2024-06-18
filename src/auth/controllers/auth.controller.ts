@@ -10,6 +10,7 @@ import { AuthUser } from '../decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import { REFRESH_TOKEN_KEY } from '../auth.constants';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @Controller('api/auth')
 @ApiTags('인증 API')
@@ -25,9 +26,11 @@ export class AuthController {
   @ApiBody({ type: LoginRequest })
   @Post('login')
   async login(@AuthUser() user: User, @Res() res: Response): Promise<void> {
-    const { refreshToken, cookieOptions, response } =
-      await this.authService.login(user);
-    res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
+    const { refreshToken, cookieOptions } = await this.authService.login(user);
+
+    res
+      .cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions)
+      .send(ResponseDto.OK());
   }
 
   @Public()
@@ -51,18 +54,20 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   async refresh(@AuthUser() user: User, @Res() res: Response) {
-    const { refreshToken, cookieOptions, response } =
+    const { refreshToken, cookieOptions, data } =
       await this.authService.login(user);
 
-    res.cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions).send(response);
+    res
+      .cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions)
+      .send(ResponseDto.OK_WITH(data));
   }
 
   @Public()
   @ApiOperation({ summary: '로그아웃(리프레쉬 토큰 쿠키 삭제)' })
   @Post('logout')
   async logout(@Res() res: Response) {
-    const { cookieOptions, response } = await this.authService.logout();
+    const { cookieOptions } = await this.authService.logout();
 
-    res.clearCookie(REFRESH_TOKEN_KEY, cookieOptions).send(response);
+    res.clearCookie(REFRESH_TOKEN_KEY, cookieOptions).send(ResponseDto.OK());
   }
 }

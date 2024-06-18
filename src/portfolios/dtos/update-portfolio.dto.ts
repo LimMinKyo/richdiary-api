@@ -10,7 +10,7 @@ export const updatePortfolioErrorMessage = {
 
 export class UpdatePortfolioRequest extends CreatePortfolioRequest {}
 
-export class UpdatePortfolioResponse extends ResponseDto<PortfolioEntity> {}
+export class UpdatePortfolioResponse extends ResponseDto {}
 
 export class UpdatePortfolioForbiddenResponse extends ResponseDto {
   @ApiProperty({ example: false })

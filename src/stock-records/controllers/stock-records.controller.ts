@@ -38,9 +38,10 @@ import {
 import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
 import { StockRecordEntity } from '../entities/stock-record.entity';
 import {
-  GetStockRecordListRequest,
-  GetStockRecordListResponse,
-} from '../dtos/get-dividend-list.dto';
+  GetStockRecordsRequest,
+  GetStockRecordsResponse,
+} from '../dtos/get-stock-records.dto';
+import { ResponseDto } from '@/common/dtos/response.dto';
 
 @ApiAuthRequired()
 @ApiTags('주식투자기록 API')
@@ -55,11 +56,12 @@ export class StockRecordsController {
   @ApiCreatedResponse({
     type: CreateStockRecordRequest,
   })
-  createStockRecord(
+  async createStockRecord(
     @AuthUser() user: User,
     @Body() body: CreateStockRecordRequest,
   ): Promise<CreateStockRecordResponse> {
-    return this.stockRecordsService.createStockRecord(user, body);
+    await this.stockRecordsService.createStockRecord(user, body);
+    return ResponseDto.OK();
   }
 
   @Patch(':id')
@@ -73,12 +75,13 @@ export class StockRecordsController {
   @ApiNotFoundResponse({
     type: UpdateStockRecordNotFoundResponse,
   })
-  updateStockRecord(
+  async updateStockRecord(
     @AuthUser() user: User,
     @Param('id') id: string,
     @Body() body: UpdateStockRecordRequest,
   ): Promise<UpdateStockRecordResponse> {
-    return this.stockRecordsService.updateStockRecord(user, id, body);
+    await this.stockRecordsService.updateStockRecord(user, id, body);
+    return ResponseDto.OK();
   }
 
   @Delete(':id')
@@ -92,20 +95,22 @@ export class StockRecordsController {
   @ApiNotFoundResponse({
     type: DeleteStockRecordNotFoundResponse,
   })
-  deleteStockRecord(
+  async deleteStockRecord(
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<DeleteStockRecordResponse> {
-    return this.stockRecordsService.deleteStockRecord(user, id);
+    await this.stockRecordsService.deleteStockRecord(user, id);
+    return ResponseDto.OK();
   }
 
   @Get()
   @ApiOperation({ summary: '주식투자기록 조회' })
   @ApiOkResponsePaginated(StockRecordEntity)
-  getStockRecordList(
+  async getStockRecordList(
     @AuthUser() user: User,
-    @Query() query: GetStockRecordListRequest,
-  ): Promise<GetStockRecordListResponse> {
-    return this.stockRecordsService.getStockRecordList(user, query);
+    @Query() query: GetStockRecordsRequest,
+  ): Promise<GetStockRecordsResponse> {
+    const data = await this.stockRecordsService.getStockRecordList(user, query);
+    return ResponseDto.OK_WITH(data);
   }
 }

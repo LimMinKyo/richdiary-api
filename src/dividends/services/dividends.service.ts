@@ -4,31 +4,20 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  CreateDividendRequest,
-  CreateDividendResponse,
-} from '../dtos/create-dividend.dto';
-import {
-  UpdateDividendRequest,
-  UpdateDividendResponse,
-} from '../dtos/update-dividend.dto';
+import { CreateDividendRequest } from '../dtos/create-dividend.dto';
+import { UpdateDividendRequest } from '../dtos/update-dividend.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
-import {
-  GetDividendsMonthRequest,
-  GetDividendsMonthResponse,
-} from '../dtos/get-dividends-month.dto';
+import { GetDividendsMonthRequest } from '../dtos/get-dividends-month.dto';
 import dayjs from 'dayjs';
-import {
-  DeleteDividendResponse,
-  deleteDividendErrorMessage,
-} from '../dtos/delete-dividend.dto';
+import { deleteDividendErrorMessage } from '../dtos/delete-dividend.dto';
 import {
   GetDividendsYearRequest,
-  GetDividendsYearResponse,
+  GetDividendsYearResponseData,
 } from '../dtos/get-dividends-year.dto';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { DividendEntity } from '../entities/dividend.entity';
+import { PaginationData } from '@/common/dtos/pagination.dto';
 
 @Injectable()
 export class DividendsService {
@@ -40,7 +29,7 @@ export class DividendsService {
   async createDividend(
     user: User,
     createDividendRequest: CreateDividendRequest,
-  ): Promise<CreateDividendResponse> {
+  ): Promise<void> {
     await this.prisma.dividend.create({
       data: {
         ...createDividendRequest,
@@ -49,16 +38,12 @@ export class DividendsService {
         userId: user.id,
       },
     });
-
-    return {
-      ok: true,
-    };
   }
 
-  async getDividends(
+  async getDividendsMonth(
     user: User,
     { date, page = 1, perPage = 10 }: GetDividendsMonthRequest,
-  ): Promise<GetDividendsMonthResponse> {
+  ): Promise<PaginationData<DividendEntity>> {
     const [result, meta] = await this.prisma.paginator.dividend
       .paginate({
         where: {
@@ -80,12 +65,8 @@ export class DividendsService {
     const data = result.map((dividend) => new DividendEntity(dividend));
 
     return {
-      ok: true,
       data,
-      meta: {
-        ...meta,
-        perPage,
-      },
+      meta,
     };
   }
 
@@ -93,7 +74,7 @@ export class DividendsService {
     user: User,
     dividendId: string,
     updateDividendRequest: UpdateDividendRequest,
-  ): Promise<UpdateDividendResponse> {
+  ): Promise<void> {
     await this.checkIsOwnDividend(user, dividendId);
 
     await this.prisma.dividend.update({
@@ -105,13 +86,9 @@ export class DividendsService {
       },
       where: { id: dividendId },
     });
-    return { ok: true };
   }
 
-  async deleteDividend(
-    user: User,
-    dividendId: string,
-  ): Promise<DeleteDividendResponse> {
+  async deleteDividend(user: User, dividendId: string): Promise<void> {
     await this.checkIsOwnDividend(user, dividendId);
 
     await this.prisma.dividend.delete({
@@ -119,15 +96,13 @@ export class DividendsService {
         id: dividendId,
       },
     });
-
-    return { ok: true };
   }
 
   async getDividendsYear(
     user: User,
     { date }: GetDividendsYearRequest,
-  ): Promise<GetDividendsYearResponse> {
-    const { data: exchangeData } = await this.exchangesService.getExchangeRate(
+  ): Promise<GetDividendsYearResponseData> {
+    const exchangeData = await this.exchangesService.getExchangeRate(
       dayjs(date).format('YYYY-MM'),
     );
 
@@ -159,8 +134,8 @@ export class DividendsService {
     });
 
     return {
-      ok: true,
-      data: { exchangeRate: exchangeData.rate, data },
+      exchangeRate: exchangeData.rate,
+      data,
     };
   }
 

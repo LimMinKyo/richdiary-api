@@ -11,5 +11,5 @@ export class GetExchangeRateRequest {
 
 export class GetExchangeRateResponse extends ResponseDto<ExchangeEntity> {
   @ApiProperty({ type: ExchangeEntity })
-  data?: ExchangeEntity;
+  data!: ExchangeEntity;
 }

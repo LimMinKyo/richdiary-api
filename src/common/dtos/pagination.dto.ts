@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ResponseDto } from './response.dto';
 import {
   PageNumberCounters,
   PageNumberPagination,
 } from 'prisma-extension-pagination/dist/types';
 import { IsNumber, IsOptional } from 'class-validator';
+import { ResponseDto } from './response.dto';
 
 export class PaginationMeta
   implements PageNumberPagination, PageNumberCounters
@@ -29,9 +29,6 @@ export class PaginationMeta
 
   @ApiProperty({ example: 13 })
   totalCount!: number;
-
-  @ApiProperty({ example: 10 })
-  perPage!: number;
 }
 
 export class PaginationRequest {
@@ -46,10 +43,12 @@ export class PaginationRequest {
   perPage?: number;
 }
 
-export class PaginationResponse<T> extends ResponseDto<T[]> {
+export class PaginationData<T> {
   @ApiProperty()
   data!: T[];
 
   @ApiProperty({ type: PaginationMeta })
   meta!: PaginationMeta;
 }
+
+export class PaginationResponseDto<T> extends ResponseDto<PaginationData<T>> {}

@@ -5,9 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Provider, User } from '@prisma/client';
 import { CookieOptions } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { LoginResponse } from '../dtos/login.dto';
+import { LoginResponseData } from '../dtos/login.dto';
 import { JwtPayload } from '../auth.interfaces';
-import { LogoutResponse } from '../dtos/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +41,7 @@ export class AuthService {
   async login(user: User): Promise<{
     refreshToken: string;
     cookieOptions: CookieOptions;
-    response: LoginResponse;
+    data: LoginResponseData;
   }> {
     const accessToken = this.generateAccessToken(user);
     const { refreshToken, cookieOptions } = this.generateRefreshToken(user);
@@ -50,11 +49,8 @@ export class AuthService {
     return {
       refreshToken,
       cookieOptions,
-      response: {
-        ok: true,
-        data: {
-          accessToken,
-        },
+      data: {
+        accessToken,
       },
     };
   }
@@ -73,13 +69,9 @@ export class AuthService {
 
   async logout(): Promise<{
     cookieOptions: CookieOptions;
-    response: LogoutResponse;
   }> {
     return {
       cookieOptions: this.getRefreshTokenCookieOptions({ maxAge: 0 }),
-      response: {
-        ok: true,
-      },
     };
   }
 
