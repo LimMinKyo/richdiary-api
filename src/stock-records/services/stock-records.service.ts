@@ -16,6 +16,11 @@ import {
   updateStockRecordErrorMessage,
 } from '../dtos/update-stock-record.dto';
 import { DeleteStockRecordResponse } from '../dtos/delete-stock-record.dto';
+import {
+  GetStockRecordListRequest,
+  GetStockRecordListResponse,
+} from '../dtos/get-dividend-list.dto';
+import { StockRecordEntity } from '../entities/stock-record.entity';
 
 @Injectable()
 export class StockRecordsService {
@@ -70,6 +75,42 @@ export class StockRecordsService {
     });
 
     return { ok: true };
+  }
+
+  async getStockRecordList(
+    user: User,
+    { date, page = 1, perPage = 10 }: GetStockRecordListRequest,
+  ): Promise<GetStockRecordListResponse> {
+    const [result, meta] = await this.prisma.paginator.stockRecord
+      .paginate({
+        where: {
+          userId: user.id,
+          recordAt: {
+            gte: dayjs(date).startOf('month').toISOString(),
+            lte: dayjs(date).endOf('month').toISOString(),
+          },
+        },
+        orderBy: {
+          recordAt: 'asc',
+        },
+      })
+      .withPages({
+        page,
+        limit: perPage,
+      });
+
+    const data = result.map(
+      (stockRecord) => new StockRecordEntity(stockRecord),
+    );
+
+    return {
+      ok: true,
+      data,
+      meta: {
+        ...meta,
+        perPage,
+      },
+    };
   }
 
   private async checkIsOwnStockRecord(user: User, stockRecordId: string) {

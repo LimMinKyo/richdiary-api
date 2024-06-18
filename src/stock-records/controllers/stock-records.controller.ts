@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Get,
+  Query,
+} from '@nestjs/common';
 import {
   CreateStockRecordRequest,
   CreateStockRecordResponse,
@@ -26,6 +35,12 @@ import {
   DeleteStockRecordNotFoundResponse,
   DeleteStockRecordResponse,
 } from '../dtos/delete-stock-record.dto';
+import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-paginated.decorator';
+import { StockRecordEntity } from '../entities/stock-record.entity';
+import {
+  GetStockRecordListRequest,
+  GetStockRecordListResponse,
+} from '../dtos/get-dividend-list.dto';
 
 @ApiAuthRequired()
 @ApiTags('주식투자기록 API')
@@ -42,12 +57,9 @@ export class StockRecordsController {
   })
   createStockRecord(
     @AuthUser() user: User,
-    @Body() createDividendRequest: CreateStockRecordRequest,
+    @Body() body: CreateStockRecordRequest,
   ): Promise<CreateStockRecordResponse> {
-    return this.stockRecordsService.createStockRecord(
-      user,
-      createDividendRequest,
-    );
+    return this.stockRecordsService.createStockRecord(user, body);
   }
 
   @Patch(':id')
@@ -64,13 +76,9 @@ export class StockRecordsController {
   updateStockRecord(
     @AuthUser() user: User,
     @Param('id') id: string,
-    @Body() updateStockRecordRequest: UpdateStockRecordRequest,
+    @Body() body: UpdateStockRecordRequest,
   ): Promise<UpdateStockRecordResponse> {
-    return this.stockRecordsService.updateStockRecord(
-      user,
-      id,
-      updateStockRecordRequest,
-    );
+    return this.stockRecordsService.updateStockRecord(user, id, body);
   }
 
   @Delete(':id')
@@ -89,5 +97,15 @@ export class StockRecordsController {
     @Param('id') id: string,
   ): Promise<DeleteStockRecordResponse> {
     return this.stockRecordsService.deleteStockRecord(user, id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: '주식투자기록 조회' })
+  @ApiOkResponsePaginated(StockRecordEntity)
+  getStockRecordList(
+    @AuthUser() user: User,
+    @Query() query: GetStockRecordListRequest,
+  ): Promise<GetStockRecordListResponse> {
+    return this.stockRecordsService.getStockRecordList(user, query);
   }
 }
