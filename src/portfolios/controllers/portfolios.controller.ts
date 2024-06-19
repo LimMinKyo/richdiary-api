@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { PortfoliosService } from '../services/portfolios.service';
-import { GetPortfolioListResponse } from '../dtos/get-portfolio-list.dto';
+import { GetPortfoliosResponse } from '../dtos/get-portfolios.dto';
 import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
@@ -47,11 +47,9 @@ export class PortfoliosController {
 
   @Get()
   @ApiOperation({ summary: '내 포트폴리오 조회' })
-  @ApiOkResponse({ type: GetPortfolioListResponse })
-  async getPortfolioList(
-    @AuthUser() user: User,
-  ): Promise<GetPortfolioListResponse> {
-    const data = await this.portfolioService.getPortfolioList(user);
+  @ApiOkResponse({ type: GetPortfoliosResponse })
+  async getPortfolios(@AuthUser() user: User): Promise<GetPortfoliosResponse> {
+    const data = await this.portfolioService.getPortfolios(user);
     return ResponseDto.OK_WITH(data);
   }
 

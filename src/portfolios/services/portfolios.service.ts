@@ -3,28 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { GetPortfolioListResponse } from '../dtos/get-portfolio-list.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { PortfolioEntity } from '../entities/portfolio.entity';
-import {
-  CreatePortfolioRequest,
-  CreatePortfolioResponse,
-} from '../dtos/create-portfolio.dto';
-import {
-  DeletePortfolioResponse,
-  deletePortfolioErrorMessage,
-} from '../dtos/delete-portfolio.dto';
-import {
-  UpdatePortfolioRequest,
-  UpdatePortfolioResponse,
-} from '../dtos/update-portfolio.dto';
+import { CreatePortfolioRequest } from '../dtos/create-portfolio.dto';
+import { deletePortfolioErrorMessage } from '../dtos/delete-portfolio.dto';
+import { UpdatePortfolioRequest } from '../dtos/update-portfolio.dto';
 
 @Injectable()
 export class PortfoliosService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getPortfolioList(user: User): Promise<PortfolioEntity[]> {
+  async getPortfolios(user: User): Promise<PortfolioEntity[]> {
     const data = await this.prisma.portfolio
       .findMany({
         where: {
