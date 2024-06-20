@@ -30,11 +30,11 @@ import {
   GetDividendsYearResponseData,
 } from '../dtos/get-dividends-year.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkResponse } from '@/common/responses/ok.response';
-import { PermissionDeniedResponse } from '@/common/responses/permission-denied.response';
-import { DataNotFoundResponse } from '@/common/responses/data-not-found.response';
+import { OkResponseDto } from '@/common/responses/ok.response';
+import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
+import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
-import { OkWithDataResponse } from '@/common/responses/ok-with-data.response';
+import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
 import { PaginationResponseDto } from '@/common/dtos/pagination.dto';
 
 @ApiAuthRequired()
@@ -45,38 +45,38 @@ export class DividendsController {
 
   @Post()
   @ApiOperation({ summary: '배당일지 추가' })
-  @ApiCreatedResponse({ type: OkResponse })
+  @ApiCreatedResponse({ type: OkResponseDto })
   async createDividend(
     @AuthUser() user: User,
     @Body() body: CreateDividendRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.dividendsService.createDividend(user, body);
     return ResponseDto.OK();
   }
 
   @Patch(':id')
   @ApiOperation({ summary: '배당일지 수정' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
-  @ApiNotFoundResponse({ type: DataNotFoundResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async updateDividend(
     @AuthUser() user: User,
     @Param('id') id: string,
     @Body() body: UpdateDividendRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.dividendsService.updateDividend(user, id, body);
     return ResponseDto.OK();
   }
 
   @Delete(':id')
   @ApiOperation({ summary: '배당일지 삭제' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
-  @ApiNotFoundResponse({ type: DataNotFoundResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async deleteDividend(
     @AuthUser() user: User,
     @Param('id') id: string,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.dividendsService.deleteDividend(user, id);
     return ResponseDto.OK();
   }
@@ -98,7 +98,7 @@ export class DividendsController {
   async getDividendsYear(
     @AuthUser() user: User,
     @Query() query: GetDividendsYearRequest,
-  ): Promise<OkWithDataResponse<GetDividendsYearResponseData>> {
+  ): Promise<OkWithDataResponseDto<GetDividendsYearResponseData>> {
     const data = await this.dividendsService.getDividendsYear(user, query);
     return ResponseDto.OK_WITH(data);
   }

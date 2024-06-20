@@ -24,9 +24,9 @@ import { UpdatePortfolioRequest } from '../dtos/update-portfolio.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
 import { PortfolioEntity } from '../entities/portfolio.entity';
-import { OkWithDataResponse } from '@/common/responses/ok-with-data.response';
-import { OkResponse } from '@/common/responses/ok.response';
-import { PermissionDeniedResponse } from '@/common/responses/permission-denied.response';
+import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
+import { OkResponseDto } from '@/common/responses/ok.response';
+import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
 import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
 
 @ApiAuthRequired()
@@ -40,45 +40,45 @@ export class PortfoliosController {
   @ApiOkResponseWithData(PortfolioEntity, { isArray: true })
   async getPortfolios(
     @AuthUser() user: User,
-  ): Promise<OkWithDataResponse<PortfolioEntity[]>> {
+  ): Promise<OkWithDataResponseDto<PortfolioEntity[]>> {
     const data = await this.portfolioService.getPortfolios(user);
     return ResponseDto.OK_WITH(data);
   }
 
   @Post()
   @ApiOperation({ summary: '포트폴리오 생성' })
-  @ApiCreatedResponse({ type: OkResponse })
+  @ApiCreatedResponse({ type: OkResponseDto })
   async createPortfolio(
     @AuthUser() user: User,
     @Body() body: CreatePortfolioRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.portfolioService.createPortfolio(user, body);
     return ResponseDto.OK();
   }
 
   @Patch(':id')
   @ApiOperation({ summary: '포트폴리오 수정' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
   @ApiNotFoundResponse({ type: DataNotFoundException })
   async updatePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
     @Body() body: UpdatePortfolioRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.portfolioService.updatePortfolio(user, portfolioId, body);
     return ResponseDto.OK();
   }
 
   @Delete(':id')
   @ApiOperation({ summary: '포트폴리오 삭제' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
   @ApiNotFoundResponse({ type: DataNotFoundException })
   async deletePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.portfolioService.deletePortfolio(user, portfolioId);
     return ResponseDto.OK();
   }

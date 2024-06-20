@@ -2,7 +2,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { ResponseDto } from '../dtos/response.dto';
 import { ResponseStatus } from '../common.constants';
 
-export class OkResponse implements ResponseDto {
+export class OkResponseDto implements ResponseDto {
   @ApiProperty({ enum: ResponseStatus, example: ResponseStatus.OK })
   statusCode!: ResponseStatus;
 

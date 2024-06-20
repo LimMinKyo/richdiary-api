@@ -6,7 +6,7 @@ import { GetExchangeRateRequest } from '../dtos/get-exchange-rate.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
 import { ExchangeEntity } from '../entity/exchange.entity';
-import { OkWithDataResponse } from '@/common/responses/ok-with-data.response';
+import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
 
 @ApiTags('환율 API')
 @Controller('api/exchanges')
@@ -21,7 +21,7 @@ export class ExchangesController {
   @ApiOkResponseWithData(ExchangeEntity)
   async getExchangeRate(
     @Query() { searchDate }: GetExchangeRateRequest,
-  ): Promise<OkWithDataResponse<ExchangeEntity>> {
+  ): Promise<OkWithDataResponseDto<ExchangeEntity>> {
     const data = await this.exchnagesService.getExchangeRate(searchDate);
     return ResponseDto.OK_WITH(data);
   }

@@ -11,7 +11,7 @@ import { User } from '@prisma/client';
 import { REFRESH_TOKEN_KEY } from '../auth.constants';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkResponse } from '@/common/responses/ok.response';
+import { OkResponseDto } from '@/common/responses/ok.response';
 
 @Controller('api/auth')
 @ApiTags('인증 API')
@@ -20,7 +20,7 @@ export class AuthController {
 
   @Public()
   @ApiOperation({ summary: '일반 로그인' })
-  @ApiOkResponse({ type: OkResponse })
+  @ApiOkResponse({ type: OkResponseDto })
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequest })
   @Post('login')

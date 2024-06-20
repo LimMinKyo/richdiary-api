@@ -1,17 +1,17 @@
 import { Type, applyDecorators } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { OkResponse } from '../responses/ok.response';
+import { OkResponseDto } from '../responses/ok.response';
 
 export const ApiOkResponseWithData = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
   options?: { isArray?: boolean },
 ) =>
   applyDecorators(
-    ApiExtraModels(OkResponse, dataDto),
+    ApiExtraModels(OkResponseDto, dataDto),
     ApiOkResponse({
       schema: {
         allOf: [
-          { $ref: getSchemaPath(OkResponse) },
+          { $ref: getSchemaPath(OkResponseDto) },
           {
             properties: {
               data: {

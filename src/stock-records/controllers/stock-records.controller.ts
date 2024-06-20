@@ -26,9 +26,9 @@ import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-pagi
 import { StockRecordEntity } from '../entities/stock-record.entity';
 import { GetStockRecordsRequest } from '../dtos/get-stock-records.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { DataNotFoundResponse } from '@/common/responses/data-not-found.response';
-import { PermissionDeniedResponse } from '@/common/responses/permission-denied.response';
-import { OkResponse } from '@/common/responses/ok.response';
+import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
+import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
+import { OkResponseDto } from '@/common/responses/ok.response';
 import { PaginationResponseDto } from '@/common/dtos/pagination.dto';
 
 @ApiAuthRequired()
@@ -47,34 +47,34 @@ export class StockRecordsController {
   async createStockRecord(
     @AuthUser() user: User,
     @Body() body: CreateStockRecordRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.stockRecordsService.createStockRecord(user, body);
     return ResponseDto.OK();
   }
 
   @Patch(':id')
   @ApiOperation({ summary: '주식투자기록 수정' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
-  @ApiNotFoundResponse({ type: DataNotFoundResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async updateStockRecord(
     @AuthUser() user: User,
     @Param('id') id: string,
     @Body() body: UpdateStockRecordRequest,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.stockRecordsService.updateStockRecord(user, id, body);
     return ResponseDto.OK();
   }
 
   @Delete(':id')
   @ApiOperation({ summary: '주식투자기록 삭제' })
-  @ApiOkResponse({ type: OkResponse })
-  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
-  @ApiNotFoundResponse({ type: DataNotFoundResponse })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async deleteStockRecord(
     @AuthUser() user: User,
     @Param('id') id: string,
-  ): Promise<OkResponse> {
+  ): Promise<OkResponseDto> {
     await this.stockRecordsService.deleteStockRecord(user, id);
     return ResponseDto.OK();
   }
