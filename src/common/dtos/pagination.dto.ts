@@ -1,10 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import {
   PageNumberCounters,
   PageNumberPagination,
 } from 'prisma-extension-pagination/dist/types';
 import { IsNumber, IsOptional } from 'class-validator';
 import { ResponseDto } from './response.dto';
+import { ResponseStatus } from '../common.constants';
 
 export class PaginationMeta
   implements PageNumberPagination, PageNumberCounters
@@ -51,4 +56,15 @@ export class PaginationData<T> {
   meta!: PaginationMeta;
 }
 
-export class PaginationResponseDto<T> extends ResponseDto<PaginationData<T>> {}
+export class PaginationResponseDto<T>
+  implements ResponseDto<PaginationData<T>>
+{
+  @ApiProperty({ enum: ResponseStatus, example: ResponseStatus.OK })
+  statusCode!: ResponseStatus;
+
+  @ApiHideProperty()
+  message?: string;
+
+  @ApiProperty()
+  data!: PaginationData<T>;
+}

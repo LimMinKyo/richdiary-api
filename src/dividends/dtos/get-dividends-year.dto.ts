@@ -1,4 +1,3 @@
-import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { IsDateString, IsNotEmpty } from 'class-validator';
 import { DividendEntity } from '../entities/dividend.entity';
@@ -24,9 +23,4 @@ export class GetDividendsYearResponseData {
     },
   })
   data!: DividendEntity[][];
-}
-
-export class GetDividendsYearResponse extends ResponseDto<GetDividendsYearResponseData> {
-  @ApiProperty({ type: GetDividendsYearResponseData })
-  data!: GetDividendsYearResponseData;
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResponseStatus } from '../common.constants';
+import { ResponseStatus, errorMessage } from '../common.constants';
 
 export class ResponseDto<T = undefined> {
   @ApiProperty({ enum: ResponseStatus, description: '응답 코드' })
@@ -42,7 +42,7 @@ export class ResponseDto<T = undefined> {
   static ERROR(): ResponseDto {
     return new ResponseDto({
       statusCode: ResponseStatus.SERVER_ERROR,
-      message: '서버 에러가 발생했습니다.',
+      message: errorMessage[ResponseStatus.SERVER_ERROR],
       data: undefined,
     });
   }

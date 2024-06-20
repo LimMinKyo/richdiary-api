@@ -2,7 +2,6 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
-import { GetExchangeRateResponse } from '../dtos/get-exchange-rate.dto';
 import { ExchangeEntity } from '../entity/exchange.entity';
 
 interface ExchangeApiData {

@@ -1,19 +1,14 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateStockRecordRequest } from '../dtos/create-stock-record.dto';
 import { User } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import dayjs from 'dayjs';
-import {
-  UpdateStockRecordRequest,
-  updateStockRecordErrorMessage,
-} from '../dtos/update-stock-record.dto';
+import { UpdateStockRecordRequest } from '../dtos/update-stock-record.dto';
 import { GetStockRecordsRequest } from '../dtos/get-stock-records.dto';
 import { StockRecordEntity } from '../entities/stock-record.entity';
 import { PaginationData } from '@/common/dtos/pagination.dto';
+import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
+import { PermissionDeniedException } from '@/common/exceptions/permission-denied.exception';
 
 @Injectable()
 export class StockRecordsService {
@@ -98,11 +93,11 @@ export class StockRecordsService {
     });
 
     if (!stockRecord) {
-      throw new NotFoundException(updateStockRecordErrorMessage.NOT_FOUND);
+      throw new DataNotFoundException();
     }
 
     if (user.id !== stockRecord.userId) {
-      throw new ForbiddenException(updateStockRecordErrorMessage.FORBIDDEN);
+      throw new PermissionDeniedException();
     }
   }
 }

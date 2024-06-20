@@ -8,12 +8,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { PortfoliosService } from '../services/portfolios.service';
-import { GetPortfoliosResponse } from '../dtos/get-portfolios.dto';
 import { AuthUser } from '@/auth/decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import {
   ApiCreatedResponse,
-  ApiExcludeController,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -21,24 +19,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
-import {
-  CreatePortfolioRequest,
-  CreatePortfolioResponse,
-} from '../dtos/create-portfolio.dto';
-import {
-  DeletePortfolioForbiddenResponse,
-  DeletePortfolioNotFoundResponse,
-  DeletePortfolioResponse,
-} from '../dtos/delete-portfolio.dto';
-import {
-  UpdatePortfolioForbiddenResponse,
-  UpdatePortfolioNotFoundResponse,
-  UpdatePortfolioRequest,
-  UpdatePortfolioResponse,
-} from '../dtos/update-portfolio.dto';
+import { CreatePortfolioRequest } from '../dtos/create-portfolio.dto';
+import { UpdatePortfolioRequest } from '../dtos/update-portfolio.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
+import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
+import { PortfolioEntity } from '../entities/portfolio.entity';
+import { OkWithDataResponse } from '@/common/responses/ok-with-data.response';
+import { OkResponse } from '@/common/responses/ok.response';
+import { PermissionDeniedResponse } from '@/common/responses/permission-denied.response';
+import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
 
-@ApiExcludeController()
 @ApiAuthRequired()
 @ApiTags('포트폴리오 API')
 @Controller('api/portfolios')
@@ -47,46 +37,48 @@ export class PortfoliosController {
 
   @Get()
   @ApiOperation({ summary: '내 포트폴리오 조회' })
-  @ApiOkResponse({ type: GetPortfoliosResponse })
-  async getPortfolios(@AuthUser() user: User): Promise<GetPortfoliosResponse> {
+  @ApiOkResponseWithData(PortfolioEntity, { isArray: true })
+  async getPortfolios(
+    @AuthUser() user: User,
+  ): Promise<OkWithDataResponse<PortfolioEntity[]>> {
     const data = await this.portfolioService.getPortfolios(user);
     return ResponseDto.OK_WITH(data);
   }
 
   @Post()
   @ApiOperation({ summary: '포트폴리오 생성' })
-  @ApiCreatedResponse({ type: CreatePortfolioResponse })
+  @ApiCreatedResponse({ type: OkResponse })
   async createPortfolio(
     @AuthUser() user: User,
     @Body() body: CreatePortfolioRequest,
-  ): Promise<CreatePortfolioResponse> {
+  ): Promise<OkResponse> {
     await this.portfolioService.createPortfolio(user, body);
     return ResponseDto.OK();
   }
 
   @Patch(':id')
   @ApiOperation({ summary: '포트폴리오 수정' })
-  @ApiOkResponse({ type: UpdatePortfolioResponse })
-  @ApiForbiddenResponse({ type: UpdatePortfolioForbiddenResponse })
-  @ApiNotFoundResponse({ type: UpdatePortfolioNotFoundResponse })
+  @ApiOkResponse({ type: OkResponse })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
+  @ApiNotFoundResponse({ type: DataNotFoundException })
   async updatePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
     @Body() body: UpdatePortfolioRequest,
-  ): Promise<UpdatePortfolioResponse> {
+  ): Promise<OkResponse> {
     await this.portfolioService.updatePortfolio(user, portfolioId, body);
     return ResponseDto.OK();
   }
 
   @Delete(':id')
   @ApiOperation({ summary: '포트폴리오 삭제' })
-  @ApiOkResponse({ type: DeletePortfolioResponse })
-  @ApiForbiddenResponse({ type: DeletePortfolioForbiddenResponse })
-  @ApiNotFoundResponse({ type: DeletePortfolioNotFoundResponse })
+  @ApiOkResponse({ type: OkResponse })
+  @ApiForbiddenResponse({ type: PermissionDeniedResponse })
+  @ApiNotFoundResponse({ type: DataNotFoundException })
   async deletePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
-  ): Promise<DeletePortfolioResponse> {
+  ): Promise<OkResponse> {
     await this.portfolioService.deletePortfolio(user, portfolioId);
     return ResponseDto.OK();
   }

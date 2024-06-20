@@ -9,6 +9,9 @@ import {
 import { ResponseDto } from '../dtos/response.dto';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
+import { ResponseStatus } from '../common.constants';
+import { DataNotFoundException } from '../exceptions/data-not-found.exception';
+import { PermissionDeniedException } from '../exceptions/permission-denied.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -18,9 +21,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const { httpStatus, message } = this.getStatusCodeAndMessage(exception);
+    const { httpStatus, statusCode, message } =
+      this.getHttpStatusAndStatusCodeAndMessage(exception);
 
-    const error = ResponseDto.ERROR_WITH(message);
+    const error = ResponseDto.ERROR_WITH(message, statusCode);
 
     this.logger.error(error);
     response.status(httpStatus).json(error);
@@ -29,23 +33,36 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   /**
    * Http Status 코드와 error message 가져오기
    */
-  private getStatusCodeAndMessage(exception: unknown) {
+  private getHttpStatusAndStatusCodeAndMessage(exception: unknown) {
     let httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    let statusCode = ResponseStatus.SERVER_ERROR;
     let message = 'INTERNAL_SERVER_ERROR';
 
     if (exception instanceof HttpException) {
       httpStatus = exception.getStatus();
+      statusCode = this.getStatusCode(exception);
       message = exception.message;
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       if (exception.code === 'P2002') {
         httpStatus = HttpStatus.CONFLICT;
+        statusCode = ResponseStatus.CONFLICT;
         message = exception.message.replace(/\n/g, '');
       }
     }
 
     return {
       httpStatus,
+      statusCode,
       message,
     };
+  }
+
+  private getStatusCode(exception: HttpException) {
+    if (exception instanceof DataNotFoundException)
+      return ResponseStatus.DATA_NOT_FOUND;
+    if (exception instanceof PermissionDeniedException)
+      return ResponseStatus.PERMISSION_DENIED;
+
+    return ResponseStatus.SERVER_ERROR;
   }
 }

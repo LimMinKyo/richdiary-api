@@ -1,16 +1,10 @@
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { UpdateDividendRequest } from '../dtos/update-dividend.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { GetDividendsMonthRequest } from '../dtos/get-dividends-month.dto';
 import dayjs from 'dayjs';
-import { deleteDividendErrorMessage } from '../dtos/delete-dividend.dto';
 import {
   GetDividendsYearRequest,
   GetDividendsYearResponseData,
@@ -18,6 +12,8 @@ import {
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { DividendEntity } from '../entities/dividend.entity';
 import { PaginationData } from '@/common/dtos/pagination.dto';
+import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
+import { PermissionDeniedException } from '@/common/exceptions/permission-denied.exception';
 
 @Injectable()
 export class DividendsService {
@@ -145,11 +141,11 @@ export class DividendsService {
     });
 
     if (!dividend) {
-      throw new NotFoundException(deleteDividendErrorMessage.NOT_FOUND);
+      throw new DataNotFoundException();
     }
 
     if (user.id !== dividend.userId) {
-      throw new ForbiddenException(deleteDividendErrorMessage.FORBIDDEN);
+      throw new PermissionDeniedException();
     }
   }
 }

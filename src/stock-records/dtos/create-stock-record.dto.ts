@@ -1,4 +1,3 @@
-import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Unit } from '@prisma/client';
 import {
@@ -36,5 +35,3 @@ export class CreateStockRecordRequest {
   @IsNumber()
   quantity!: number;
 }
-
-export class CreateStockRecordResponse extends ResponseDto {}

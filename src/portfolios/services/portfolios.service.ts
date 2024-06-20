@@ -1,14 +1,11 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { PortfolioEntity } from '../entities/portfolio.entity';
 import { CreatePortfolioRequest } from '../dtos/create-portfolio.dto';
-import { deletePortfolioErrorMessage } from '../dtos/delete-portfolio.dto';
 import { UpdatePortfolioRequest } from '../dtos/update-portfolio.dto';
+import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
+import { PermissionDeniedException } from '@/common/exceptions/permission-denied.exception';
 
 @Injectable()
 export class PortfoliosService {
@@ -65,11 +62,11 @@ export class PortfoliosService {
     });
 
     if (!portfolio) {
-      throw new NotFoundException(deletePortfolioErrorMessage.NOT_FOUND);
+      throw new DataNotFoundException();
     }
 
     if (portfolio.userId !== user.id) {
-      throw new ForbiddenException(deletePortfolioErrorMessage.FORBIDDEN);
+      throw new PermissionDeniedException();
     }
   }
 }

@@ -1,4 +1,3 @@
-import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Unit } from '@prisma/client';
 import {
@@ -34,5 +33,3 @@ export class CreateDividendRequest {
   @IsOptional()
   tax?: number;
 }
-
-export class CreateDividendResponse extends ResponseDto {}
