@@ -11,7 +11,7 @@ import { User } from '@prisma/client';
 import { REFRESH_TOKEN_KEY } from '../auth.constants';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkResponseDto } from '@/common/responses/ok.response';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
 
 @Controller('api/auth')
 @ApiTags('인증 API')

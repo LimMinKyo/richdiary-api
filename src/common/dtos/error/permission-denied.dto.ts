@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { ResponseStatus, errorMessage } from '../common.constants';
-import { ResponseDto } from '../dtos/response.dto';
+import { ResponseStatus, errorMessage } from '../../common.constants';
+import { ResponseDto } from '../response.dto';
 
 export class PermissionDeniedResponseDto implements ResponseDto {
   @ApiProperty({

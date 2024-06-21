@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ResponseStatus, errorMessage } from '../common.constants';
-import { OkResponseDto } from '../responses/ok.response';
-import { OkWithDataResponseDto } from '../responses/ok-with-data.response';
+import { OkWithDataResponseDto } from './ok/ok-with-data.dto';
+import { OkResponseDto } from './ok/ok.dto';
 
 export class ResponseDto<T = undefined> {
   @ApiProperty({ enum: ResponseStatus, description: '응답 코드' })

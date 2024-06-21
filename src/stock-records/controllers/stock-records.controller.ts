@@ -26,10 +26,10 @@ import { ApiOkResponsePaginated } from '@/common/decorators/api-ok-response-pagi
 import { StockRecordEntity } from '../entities/stock-record.entity';
 import { GetStockRecordsRequest } from '../dtos/get-stock-records.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
-import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
-import { OkResponseDto } from '@/common/responses/ok.response';
 import { PaginationResponseDto } from '@/common/dtos/pagination.dto';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { PermissionDeniedResponseDto } from '@/common/dtos/error/permission-denied.dto';
+import { DataNotFoundResponseDto } from '@/common/dtos/error/data-not-found.dto';
 
 @ApiAuthRequired()
 @ApiTags('주식투자기록 API')

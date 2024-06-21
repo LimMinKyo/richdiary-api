@@ -20,10 +20,10 @@ import {
 import { User } from '@prisma/client';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
 import { UserEntity } from '../entities/user.entity';
-import { OkResponseDto } from '@/common/responses/ok.response';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { OkWithDataResponseDto } from '@/common/dtos/ok/ok-with-data.dto';
 
 @Controller('api/users')
 @ApiTags('유저 API')

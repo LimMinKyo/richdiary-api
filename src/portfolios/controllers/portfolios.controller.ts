@@ -24,10 +24,10 @@ import { UpdatePortfolioRequest } from '../dtos/update-portfolio.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
 import { PortfolioEntity } from '../entities/portfolio.entity';
-import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
-import { OkResponseDto } from '@/common/responses/ok.response';
-import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
-import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
+import { OkWithDataResponseDto } from '@/common/dtos/ok/ok-with-data.dto';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { PermissionDeniedResponseDto } from '@/common/dtos/error/permission-denied.dto';
+import { DataNotFoundResponseDto } from '@/common/dtos/error/data-not-found.dto';
 
 @ApiAuthRequired()
 @ApiTags('포트폴리오 API')

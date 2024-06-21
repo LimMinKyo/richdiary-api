@@ -6,7 +6,7 @@ import { GetExchangeRateRequest } from '../dtos/get-exchange-rate.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
 import { ExchangeEntity } from '../entity/exchange.entity';
-import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
+import { OkWithDataResponseDto } from '@/common/dtos/ok/ok-with-data.dto';
 
 @ApiTags('환율 API')
 @Controller('api/exchanges')

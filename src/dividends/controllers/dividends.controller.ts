@@ -30,12 +30,12 @@ import {
   GetDividendsYearResponseData,
 } from '../dtos/get-dividends-year.dto';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkResponseDto } from '@/common/responses/ok.response';
-import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
-import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
 import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
-import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
 import { PaginationResponseDto } from '@/common/dtos/pagination.dto';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { PermissionDeniedResponseDto } from '@/common/dtos/error/permission-denied.dto';
+import { DataNotFoundResponseDto } from '@/common/dtos/error/data-not-found.dto';
+import { OkWithDataResponseDto } from '@/common/dtos/ok/ok-with-data.dto';
 
 @ApiAuthRequired()
 @ApiTags('배당일지 API')

@@ -1,6 +1,6 @@
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { ResponseDto } from '../dtos/response.dto';
-import { ResponseStatus, errorMessage } from '../common.constants';
+import { ApiProperty } from '@nestjs/swagger';
+import { ResponseDto } from '../response.dto';
+import { ResponseStatus, errorMessage } from '../../common.constants';
 
 export class DataNotFoundResponseDto implements ResponseDto {
   @ApiProperty({ enum: ResponseStatus, example: ResponseStatus.DATA_NOT_FOUND })
