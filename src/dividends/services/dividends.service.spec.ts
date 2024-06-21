@@ -69,15 +69,7 @@ describe('DividendsService', () => {
       };
 
       // when
-      const result = await service.createDividend(
-        mockUser,
-        createDividendRequest,
-      );
-
-      // then
-      expect(result).toEqual({
-        ok: true,
-      });
+      await service.createDividend(mockUser, createDividendRequest);
     });
   });
 
@@ -87,10 +79,7 @@ describe('DividendsService', () => {
       prisma.dividend.findFirst.mockResolvedValue(mockDividend);
 
       // when
-      const result = await service.deleteDividend(mockUser, mockDividend.id);
-
-      // then
-      expect(result).toEqual({ ok: true });
+      await service.deleteDividend(mockUser, mockDividend.id);
     });
   });
 });

@@ -27,7 +27,7 @@ import { PortfolioEntity } from '../entities/portfolio.entity';
 import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
 import { OkResponseDto } from '@/common/responses/ok.response';
 import { PermissionDeniedResponseDto } from '@/common/responses/permission-denied.response';
-import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
+import { DataNotFoundResponseDto } from '@/common/responses/data-not-found.response';
 
 @ApiAuthRequired()
 @ApiTags('포트폴리오 API')
@@ -60,7 +60,7 @@ export class PortfoliosController {
   @ApiOperation({ summary: '포트폴리오 수정' })
   @ApiOkResponse({ type: OkResponseDto })
   @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
-  @ApiNotFoundResponse({ type: DataNotFoundException })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async updatePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
@@ -74,7 +74,7 @@ export class PortfoliosController {
   @ApiOperation({ summary: '포트폴리오 삭제' })
   @ApiOkResponse({ type: OkResponseDto })
   @ApiForbiddenResponse({ type: PermissionDeniedResponseDto })
-  @ApiNotFoundResponse({ type: DataNotFoundException })
+  @ApiNotFoundResponse({ type: DataNotFoundResponseDto })
   async deletePortfolio(
     @AuthUser() user: User,
     @Param('id') portfolioId: string,
