@@ -1,10 +1,7 @@
+import { ResponseStatus, errorMessage } from '@/common/common.constants';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-
-export const verifyEmailErrorMessage = {
-  CODE_INVALID: '인증코드가 유효하지 않습니다.',
-};
 
 export class VerifyEmailRequest {
   @ApiProperty()
@@ -12,12 +9,13 @@ export class VerifyEmailRequest {
   code!: string;
 }
 
-export class VerifyEmailResponse extends ResponseDto {}
+export class VerifyEmailBadRequestResponse implements ResponseDto {
+  @ApiProperty({
+    enum: ResponseStatus,
+    example: ResponseStatus.VERIFY_CODE_INVALID,
+  })
+  statusCode = ResponseStatus.VERIFY_CODE_INVALID;
 
-export class VerifyEmailBadRequestResponse extends ResponseDto {
-  @ApiProperty({ example: false })
-  ok!: boolean;
-
-  @ApiProperty({ example: verifyEmailErrorMessage.CODE_INVALID })
+  @ApiProperty({ example: errorMessage[ResponseStatus.EMAIL_ALREADY_EXIST] })
   message!: string;
 }

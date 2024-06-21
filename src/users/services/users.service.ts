@@ -1,17 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import {
-  CreateAccountRequest,
-  createAccountErrorMessage,
-} from '../dto/create-account.dto';
+import { Injectable } from '@nestjs/common';
+import { CreateAccountRequest } from '../dto/create-account.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
-import {
-  VerifyEmailRequest,
-  verifyEmailErrorMessage,
-} from '../dto/verify-email.dto';
+import { VerifyEmailRequest } from '../dto/verify-email.dto';
 import { Provider, User } from '@prisma/client';
 import { UserEntity } from '../entities/user.entity';
+import { EmailAlreadyExistException } from '../exceptions/email-already-exist.exception';
+import { VerifyCodeInvalidException } from '../exceptions/verify-code-invalid.exception';
 
 @Injectable()
 export class UsersService {
@@ -28,9 +24,7 @@ export class UsersService {
     const user = await this.findOneByEmail(email);
 
     if (user) {
-      throw new BadRequestException(
-        createAccountErrorMessage.EMAIL_ALREADY_EXIST,
-      );
+      throw new EmailAlreadyExistException();
     }
 
     password = await hashPassword(password);
@@ -106,7 +100,7 @@ export class UsersService {
     });
 
     if (!verification) {
-      throw new BadRequestException(verifyEmailErrorMessage.CODE_INVALID);
+      throw new VerifyCodeInvalidException();
     }
 
     await this.prisma.user.update({

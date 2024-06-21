@@ -3,7 +3,6 @@ import { UsersService } from '../services/users.service';
 import {
   CreateAccountBadRequestResponse,
   CreateAccountRequest,
-  CreateAccountResponse,
 } from '../dto/create-account.dto';
 import { Request } from 'express';
 import {
@@ -17,12 +16,14 @@ import { Public } from '@/auth/decorators/public.decorator';
 import {
   VerifyEmailBadRequestResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse,
 } from '../dto/verify-email.dto';
 import { User } from '@prisma/client';
-import { GetMyProfileResponse } from '../dto/get-my-profile.dto';
 import { ApiAuthRequired } from '@/common/decorators/api-auth-required.decorator';
 import { ResponseDto } from '@/common/dtos/response.dto';
+import { OkWithDataResponseDto } from '@/common/responses/ok-with-data.response';
+import { UserEntity } from '../entities/user.entity';
+import { OkResponseDto } from '@/common/responses/ok.response';
+import { ApiOkResponseWithData } from '@/common/decorators/api-ok-response-with-data.decorator';
 
 @Controller('api/users')
 @ApiTags('유저 API')
@@ -32,26 +33,24 @@ export class UsersController {
   @ApiOperation({ summary: '회원가입' })
   @Public()
   @Post()
-  @ApiCreatedResponse({
-    type: CreateAccountResponse,
-  })
+  @ApiCreatedResponse({ type: OkResponseDto })
   @ApiBadRequestResponse({
     type: CreateAccountBadRequestResponse,
   })
   async createAccount(
-    @Body() createAccountRequest: CreateAccountRequest,
-  ): Promise<CreateAccountResponse> {
-    await this.usersService.createAccount(createAccountRequest);
+    @Body() body: CreateAccountRequest,
+  ): Promise<OkResponseDto> {
+    await this.usersService.createAccount(body);
     return ResponseDto.OK();
   }
 
   @ApiOperation({ summary: '내정보 조회' })
   @ApiAuthRequired()
-  @ApiOkResponse({
-    type: GetMyProfileResponse,
-  })
+  @ApiOkResponseWithData(UserEntity)
   @Get('profile')
-  getMyProfile(@Req() req: Request & { user: User }): GetMyProfileResponse {
+  getMyProfile(
+    @Req() req: Request & { user: User },
+  ): OkWithDataResponseDto<UserEntity> {
     const data = this.usersService.getMyProfile(req.user);
     return ResponseDto.OK_WITH(data);
   }
@@ -59,15 +58,11 @@ export class UsersController {
   @ApiOperation({ summary: '이메일 인증' })
   @Public()
   @Patch('verify')
-  @ApiOkResponse({
-    type: VerifyEmailResponse,
-  })
-  @ApiBadRequestResponse({
-    type: VerifyEmailBadRequestResponse,
-  })
+  @ApiOkResponse({ type: OkResponseDto })
+  @ApiBadRequestResponse({ type: VerifyEmailBadRequestResponse })
   async verifyEmail(
     @Body() verifyEmailRequest: VerifyEmailRequest,
-  ): Promise<VerifyEmailResponse> {
+  ): Promise<OkResponseDto> {
     await this.usersService.verifyEmail(verifyEmailRequest);
     return ResponseDto.OK();
   }

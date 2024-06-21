@@ -1,10 +1,7 @@
+import { ResponseStatus, errorMessage } from '@/common/common.constants';
 import { ResponseDto } from '@/common/dtos/response.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
-
-export const createAccountErrorMessage = {
-  EMAIL_ALREADY_EXIST: '해당 이메일은 이미 존재합니다.',
-};
 
 export class CreateAccountRequest {
   @ApiProperty()
@@ -20,12 +17,13 @@ export class CreateAccountRequest {
   password!: string;
 }
 
-export class CreateAccountResponse extends ResponseDto {}
+export class CreateAccountBadRequestResponse implements ResponseDto {
+  @ApiProperty({
+    enum: ResponseStatus,
+    example: ResponseStatus.EMAIL_ALREADY_EXIST,
+  })
+  statusCode = ResponseStatus.EMAIL_ALREADY_EXIST;
 
-export class CreateAccountBadRequestResponse extends ResponseDto {
-  @ApiProperty({ example: false })
-  ok!: boolean;
-
-  @ApiProperty({ example: createAccountErrorMessage.EMAIL_ALREADY_EXIST })
-  message!: string;
+  @ApiProperty({ example: errorMessage.EMAIL_ALREADY_EXIST })
+  message = errorMessage[ResponseStatus.EMAIL_ALREADY_EXIST];
 }
