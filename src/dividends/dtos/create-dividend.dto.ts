@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Unit } from '@prisma/client';
+import { Currency } from '@prisma/client';
 import {
   IsDateString,
   IsEnum,
@@ -18,11 +18,11 @@ export class CreateDividendRequest {
   @ApiProperty({ description: '주식종목' })
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  companyName!: string;
 
-  @ApiProperty({ enum: Unit, description: '화폐' })
-  @IsEnum(Unit)
-  unit!: Unit;
+  @ApiProperty({ enum: Currency, description: '화폐' })
+  @IsEnum(Currency)
+  currency!: Currency;
 
   @ApiProperty({ description: '배당금' })
   @IsNumber()

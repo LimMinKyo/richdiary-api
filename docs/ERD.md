@@ -35,8 +35,8 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
   DateTime dividendAt
-  String name
-  Unit unit
+  String companyName
+  Currency currency
   Float dividend
   Float tax
   String userId FK
@@ -49,7 +49,7 @@ erDiagram
   DateTime recordAt
   String companyName
   Float quantity
-  Unit unit
+  Currency currency
   Float buyPrice
   Float currentPrice
   String userId FK
@@ -58,7 +58,7 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
   String date
-  Unit currency
+  Currency currency
   Float rate
 }
 "Verification" |o--|| "User" : user
@@ -69,68 +69,74 @@ erDiagram
 ```
 
 ### `User`
+유저
 
 **Properties**
   - `id`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `name`: 
-  - `email`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
+  - `name`: 이름
+  - `email`: 이메일
   - `password`: Provider가 LOCAL이 아닐 경우 null
-  - `provider`: 
-  - `verified`: 
+  - `provider`: 회원가입 경로
+  - `verified`: 이메일 인증 여부
 
 ### `Verification`
+이메일 인증 코드
 
 **Properties**
   - `id`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `code`: 
-  - `userId`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
+  - `code`: 인증코드
+  - `userId`: 유저 ID
 
 ### `Portfolio`
+포트폴리오
 
 **Properties**
   - `id`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `name`: 
-  - `userId`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
+  - `name`: 포트폴리오 이름
+  - `userId`: 유저 ID
 
 ### `Dividend`
+배당일지
 
 **Properties**
   - `id`: 
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `dividendAt`: 
-  - `name`: 
-  - `unit`: 
-  - `dividend`: 
-  - `tax`: 
-  - `userId`: 
-  - `portfolioId`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
+  - `dividendAt`: 배당입금일
+  - `companyName`: 회사명
+  - `currency`: 화폐단위
+  - `dividend`: 배당금
+  - `tax`: 세금
+  - `userId`: 유저 ID
+  - `portfolioId`: 포트폴리오 ID
 
 ### `StockRecord`
+주식투자기록
 
 **Properties**
   - `id`: 
-  - `createdAt`: 
-  - `updatedAt`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
   - `recordAt`: 기록일
   - `companyName`: 회사명
   - `quantity`: 보유주식수
-  - `unit`: 
+  - `currency`: 화폐 단위
   - `buyPrice`: 구매가
   - `currentPrice`: 현재가
-  - `userId`: 
+  - `userId`: 유저 ID
 
 ### `Exchange`
+환율
 
 **Properties**
-  - `createdAt`: 
-  - `updatedAt`: 
-  - `date`: 
-  - `currency`: 
-  - `rate`: 
+  - `createdAt`: 생성일
+  - `updatedAt`: 수정일
+  - `date`: 날짜
+  - `currency`: 화폐단위
+  - `rate`: 환율

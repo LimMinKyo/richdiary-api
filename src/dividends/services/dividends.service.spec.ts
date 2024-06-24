@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DividendsService } from './dividends.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Dividend, PrismaClient, User } from '@prisma/client';
+import { Currency, Dividend, PrismaClient, User } from '@prisma/client';
 import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import dayjs from 'dayjs';
@@ -24,10 +24,10 @@ const mockDividend: Dividend = {
   createdAt: new Date(),
   updatedAt: new Date(),
   dividendAt: new Date(),
-  name: 'MSFT',
+  companyName: 'MSFT',
   dividend: 123,
   tax: 1,
-  unit: 'KRW',
+  currency: Currency.KRW,
   userId: mockUser.id,
   portfolioId: null,
 };
@@ -63,8 +63,8 @@ describe('DividendsService', () => {
       const createDividendRequest: CreateDividendRequest = {
         dividend: mockDividend.dividend,
         dividendAt: dayjs(mockDividend.dividendAt).format('YYYY-MM-DD'),
-        name: mockDividend.name,
-        unit: mockDividend.unit,
+        companyName: mockDividend.companyName,
+        currency: mockDividend.currency,
         tax: mockDividend.tax,
       };
 

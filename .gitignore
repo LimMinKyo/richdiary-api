@@ -44,7 +44,7 @@ lerna-debug.log*
 .pnp.*
 
 # kysely
-src/db/*
+src/database/*
 
 # .env
 .env

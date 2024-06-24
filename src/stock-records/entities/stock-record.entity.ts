@@ -1,4 +1,4 @@
-import { Dividend, StockRecord, Unit } from '@prisma/client';
+import { StockRecord, Currency } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
@@ -31,8 +31,8 @@ export class StockRecordEntity implements StockRecord {
   @ApiProperty()
   currentPrice!: number;
 
-  @ApiProperty({ enum: Unit })
-  unit!: Unit;
+  @ApiProperty({ enum: Currency })
+  currency!: Currency;
 
   @Exclude()
   userId!: string;

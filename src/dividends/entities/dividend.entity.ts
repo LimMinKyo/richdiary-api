@@ -1,4 +1,4 @@
-import { Dividend, Unit } from '@prisma/client';
+import { Currency, Dividend } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
@@ -20,7 +20,7 @@ export class DividendEntity implements Dividend {
   dividendAt!: Date;
 
   @ApiProperty()
-  name!: string;
+  companyName!: string;
 
   @ApiProperty()
   dividend!: number;
@@ -28,8 +28,8 @@ export class DividendEntity implements Dividend {
   @ApiProperty()
   tax!: number;
 
-  @ApiProperty({ enum: Unit })
-  unit!: Unit;
+  @ApiProperty({ enum: Currency })
+  currency!: Currency;
 
   @Exclude()
   userId!: string;

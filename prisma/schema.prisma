@@ -4,7 +4,7 @@ generator client {
 
 generator kysely {
   provider     = "prisma-kysely"
-  output       = "../src/db"
+  output       = "../src/database"
   fileName     = "types.ts"
   enumFileName = "enums.ts"
 }
@@ -20,16 +20,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// 유저
+///
 /// @namespace 부자일기
 model User {
+  /// @format uuid
   id           String        @id @default(uuid()) @db.Uuid
+  /// 생성일
   createdAt    DateTime      @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt    DateTime      @updatedAt @db.Timestamptz()
+  /// 이름
   name         String
+  /// 이메일
   email        String        @unique
   /// Provider가 LOCAL이 아닐 경우 null
   password     String?
+  /// 회원가입 경로
   provider     Provider
+  /// 이메일 인증 여부
   verified     Boolean       @default(false)
   verification Verification?
   dividends    Dividend[]
@@ -37,47 +46,78 @@ model User {
   StockRecords StockRecord[]
 }
 
+/// 이메일 인증 코드
+///
 /// @namespace 부자일기
 model Verification {
+  /// @format uuid
   id        String   @id @default(uuid()) @db.Uuid
+  /// 생성일
   createdAt DateTime @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt DateTime @updatedAt @db.Timestamptz()
+  /// 인증코드
   code      String   @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  /// 유저 ID
   userId    String   @unique @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+/// 포트폴리오
+///
 /// @namespace 부자일기
 model Portfolio {
+  /// @format uuid
   id        String     @id @default(uuid()) @db.Uuid
+  /// 생성일
   createdAt DateTime   @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt DateTime   @updatedAt @db.Timestamptz()
+  /// 포트폴리오 이름
   name      String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 유저 ID
   userId    String     @db.Uuid
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   Dividend  Dividend[]
 }
 
+/// 배당일지
+///
 /// @namespace 부자일기
 model Dividend {
+  /// @format uuid
   id          String     @id @default(uuid()) @db.Uuid
+  /// 생성일
   createdAt   DateTime   @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt   DateTime   @updatedAt @db.Timestamptz()
+  /// 배당입금일
   dividendAt  DateTime   @db.Timestamptz()
-  name        String
-  unit        Unit
+  /// 회사명
+  companyName String
+  /// 화폐단위
+  currency    Currency
+  /// 배당금
   dividend    Float
+  /// 세금
   tax         Float
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 유저 ID
   userId      String     @db.Uuid
-  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 포트폴리오 ID
   portfolioId String?    @db.Uuid
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
 }
 
+/// 주식투자기록
+///
 /// @namespace 부자일기
 model StockRecord {
+  /// @format uuid
   id           String   @id @default(uuid()) @db.Uuid
+  /// 생성일
   createdAt    DateTime @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt    DateTime @updatedAt @db.Timestamptz()
   /// 기록일
   recordAt     DateTime @db.Timestamptz()
@@ -85,21 +125,32 @@ model StockRecord {
   companyName  String
   /// 보유주식수
   quantity     Float
-  unit         Unit
+  /// 화폐 단위
+  currency     Currency
   /// 구매가
   buyPrice     Float
   /// 현재가
   currentPrice Float
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 유저 ID
   userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+/// 환율
+///
 /// @namespace 부자일기
 model Exchange {
+  /// 생성일
   createdAt DateTime @default(now()) @db.Timestamptz()
+  /// 수정일
   updatedAt DateTime @updatedAt @db.Timestamptz()
+  /// 날짜
+  ///
+  /// @format YYYY-MM 
   date      String
-  currency  Unit
+  /// 화폐단위
+  currency  Currency
+  /// 환율
   rate      Float
 
   @@id([date, currency])
@@ -110,7 +161,7 @@ enum Provider {
   KAKAO
 }
 
-enum Unit {
+enum Currency {
   KRW
   USD
 }

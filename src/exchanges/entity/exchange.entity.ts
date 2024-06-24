@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exchange, Unit } from '@prisma/client';
+import { Exchange, Currency } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 export class ExchangeEntity implements Exchange {
@@ -11,7 +11,7 @@ export class ExchangeEntity implements Exchange {
   date!: string;
 
   @ApiProperty()
-  currency!: Unit;
+  currency!: Currency;
 
   @ApiProperty()
   rate!: number;

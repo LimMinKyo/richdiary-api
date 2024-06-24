@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Unit } from '@prisma/client';
+import { Currency } from '@prisma/client';
 import {
   IsDateString,
   IsEnum,
@@ -19,9 +19,9 @@ export class CreateStockRecordRequest {
   @IsNotEmpty()
   companyName!: string;
 
-  @ApiProperty({ enum: Unit, description: '화폐' })
-  @IsEnum(Unit)
-  unit!: Unit;
+  @ApiProperty({ enum: Currency, description: '화폐단위' })
+  @IsEnum(Currency)
+  currency!: Currency;
 
   @ApiProperty({ description: '구매가' })
   @IsNumber()
