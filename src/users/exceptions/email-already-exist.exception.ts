@@ -1,7 +1,8 @@
+import { ResponseStatus, errorMessage } from '@/common/common.constants';
 import { BadRequestException } from '@nestjs/common';
 
 export class EmailAlreadyExistException extends BadRequestException {
   constructor() {
-    super('해당 이메일은 이미 존재합니다.');
+    super(errorMessage[ResponseStatus.EMAIL_ALREADY_EXIST]);
   }
 }
