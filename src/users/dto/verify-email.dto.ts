@@ -9,13 +9,13 @@ export class VerifyEmailRequest {
   code!: string;
 }
 
-export class VerifyEmailBadRequestResponse implements ResponseDto {
+export class VerifyCodeInvalidResponseDto implements ResponseDto {
   @ApiProperty({
     enum: ResponseStatus,
     example: ResponseStatus.VERIFY_CODE_INVALID,
   })
   statusCode = ResponseStatus.VERIFY_CODE_INVALID;
 
-  @ApiProperty({ example: errorMessage[ResponseStatus.EMAIL_ALREADY_EXIST] })
-  message!: string;
+  @ApiProperty({ example: errorMessage[ResponseStatus.VERIFY_CODE_INVALID] })
+  message = errorMessage[ResponseStatus.VERIFY_CODE_INVALID];
 }

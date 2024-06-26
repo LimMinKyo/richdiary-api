@@ -7,11 +7,8 @@ export class PermissionDeniedResponseDto implements ResponseDto {
     enum: ResponseStatus,
     example: ResponseStatus.PERMISSION_DENIED,
   })
-  statusCode!: ResponseStatus;
+  statusCode = ResponseStatus.PERMISSION_DENIED;
 
   @ApiProperty({ example: errorMessage[ResponseStatus.PERMISSION_DENIED] })
-  message!: string;
-
-  @ApiHideProperty()
-  data = undefined;
+  message = errorMessage[ResponseStatus.PERMISSION_DENIED];
 }

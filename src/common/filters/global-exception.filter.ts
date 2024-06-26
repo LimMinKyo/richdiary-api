@@ -12,10 +12,14 @@ import { Request, Response } from 'express';
 import { ResponseStatus } from '../common.constants';
 import { DataNotFoundException } from '../exceptions/data-not-found.exception';
 import { PermissionDeniedException } from '../exceptions/permission-denied.exception';
+import { VerifyCodeInvalidException } from '@/users/exceptions/verify-code-invalid.exception';
+import { ConfigService } from '@nestjs/config';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
+
+  constructor(private readonly configService: ConfigService) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -26,7 +30,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const error = ResponseDto.ERROR_WITH(message, statusCode);
 
-    this.logger.error(error);
+    if (this.configService.get('NODE_ENV') !== 'test') {
+      this.logger.error(error);
+    }
+
     response.status(httpStatus).json(error);
   }
 
@@ -62,6 +69,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       return ResponseStatus.DATA_NOT_FOUND;
     if (exception instanceof PermissionDeniedException)
       return ResponseStatus.PERMISSION_DENIED;
+    if (exception instanceof VerifyCodeInvalidException)
+      return ResponseStatus.VERIFY_CODE_INVALID;
 
     return ResponseStatus.SERVER_ERROR;
   }

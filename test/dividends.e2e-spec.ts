@@ -1,5 +1,8 @@
 import { AppModule } from '@/app.module';
-import { PaginationMeta } from '@/common/dtos/pagination.dto';
+import {
+  PaginationMeta,
+  PaginationResponseDto,
+} from '@/common/dtos/pagination.dto';
 import { CreateDividendRequest } from '@/dividends/dtos/create-dividend.dto';
 import { GetDividendsMonthRequest } from '@/dividends/dtos/get-dividends-month.dto';
 import { UpdateDividendRequest } from '@/dividends/dtos/update-dividend.dto';
@@ -8,8 +11,12 @@ import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@prisma/client';
+import { Currency, User } from '@prisma/client';
 import request from 'supertest';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { PermissionDeniedResponseDto } from '@/common/dtos/error/permission-denied.dto';
+import { DataNotFoundResponseDto } from '@/common/dtos/error/data-not-found.dto';
+import { randomUUID } from 'crypto';
 
 const paginationMetaShape = expect.objectContaining<PaginationMeta>({
   isFirstPage: expect.any(Boolean),
@@ -29,18 +36,18 @@ describe('/api/dividends', () => {
   let accessToken: string;
   let otherAccessToken: string;
   const dividendShape: DividendEntity = expect.objectContaining({
-    id: expect.any(Number),
+    id: expect.any(String),
     dividendAt: expect.any(String),
-    name: expect.any(String),
+    companyName: expect.any(String),
     dividend: expect.any(Number),
     tax: expect.any(Number),
-    unit: expect.any(String),
+    currency: expect.any(String),
   });
 
   const createDividendRequest: CreateDividendRequest = {
-    name: 'MSFT',
+    companyName: 'MSFT',
     dividendAt: '2023-11-10',
-    unit: 'KRW',
+    currency: Currency.KRW,
     dividend: 123,
     tax: 1,
   };
@@ -92,9 +99,7 @@ describe('/api/dividends', () => {
         .send(createDividendRequest);
 
       expect(status).toBe(201);
-      expect(body).toEqual({
-        ok: true,
-      });
+      expect(body).toEqual(new OkResponseDto());
     });
   });
 
@@ -110,11 +115,12 @@ describe('/api/dividends', () => {
         .query(getDividendsRequest);
 
       expect(status).toBe(200);
-      expect(body).toEqual({
-        ok: true,
-        data: expect.arrayContaining([dividendShape]),
-        meta: paginationMetaShape,
-      });
+      expect(body).toEqual(
+        new PaginationResponseDto({
+          data: expect.arrayContaining([dividendShape]),
+          meta: paginationMetaShape,
+        }),
+      );
     });
   });
 
@@ -127,33 +133,27 @@ describe('/api/dividends', () => {
         .auth(otherAccessToken, { type: 'bearer' });
 
       expect(status).toBe(403);
-      expect(body).toEqual({
-        ok: false,
-        message: '권한이 없습니다.',
-      });
+      expect(body).toEqual(new PermissionDeniedResponseDto());
     });
 
     it('없는 배당일지는 수정하지 못한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
-        .patch(`/api/dividends/${999}`)
+        .patch(`/api/dividends/${randomUUID()}`)
         .auth(accessToken, { type: 'bearer' });
 
       expect(status).toBe(404);
-      expect(body).toEqual({
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      });
+      expect(body).toEqual(new DataNotFoundResponseDto());
     });
 
     it('배당일지를 성공적으로 수정한다.', async () => {
       const [dividend] = await prisma.dividend.findMany();
       const dividendId = dividend.id;
       const updateDividendRequest: UpdateDividendRequest = {
-        name: 'APPL',
+        companyName: 'APPL',
         dividend: 100,
         tax: 2,
         dividendAt: '2023-11-01',
-        unit: 'USD',
+        currency: Currency.USD,
       };
 
       const { status, body } = await request(app.getHttpServer())
@@ -162,9 +162,7 @@ describe('/api/dividends', () => {
         .send(updateDividendRequest);
 
       expect(status).toBe(200);
-      expect(body).toEqual({
-        ok: true,
-      });
+      expect(body).toEqual(new OkResponseDto());
 
       const updatedDividend = await prisma.dividend.findFirst({
         where: { id: dividendId },
@@ -189,24 +187,18 @@ describe('/api/dividends', () => {
       const count = await prisma.dividend.count();
 
       expect(status).toBe(403);
-      expect(body).toEqual({
-        ok: false,
-        message: '권한이 없습니다.',
-      });
+      expect(body).toEqual(new PermissionDeniedResponseDto());
 
       expect(count).toBe(1);
     });
 
     it('없는 배당일지는 삭제하지 못한다.', async () => {
       const { status, body } = await request(app.getHttpServer())
-        .delete(`/api/dividends/${999}`)
+        .delete(`/api/dividends/${randomUUID()}`)
         .auth(accessToken, { type: 'bearer' });
 
       expect(status).toBe(404);
-      expect(body).toEqual({
-        ok: false,
-        message: '해당 데이터가 존재하지 않습니다.',
-      });
+      expect(body).toEqual(new DataNotFoundResponseDto());
     });
 
     it('배당일지를 성공적으로 삭제한다.', async () => {
@@ -219,9 +211,7 @@ describe('/api/dividends', () => {
       const count = await prisma.dividend.count();
 
       expect(status).toBe(200);
-      expect(body).toEqual({
-        ok: true,
-      });
+      expect(body).toEqual(new OkResponseDto());
 
       expect(count).toBe(0);
     });

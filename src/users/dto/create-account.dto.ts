@@ -17,7 +17,7 @@ export class CreateAccountRequest {
   password!: string;
 }
 
-export class CreateAccountBadRequestResponse implements ResponseDto {
+export class EmailAlreadyExistResponseDto implements ResponseDto {
   @ApiProperty({
     enum: ResponseStatus,
     example: ResponseStatus.EMAIL_ALREADY_EXIST,

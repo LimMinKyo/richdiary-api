@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Get, Req, Patch } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import {
-  CreateAccountBadRequestResponse,
   CreateAccountRequest,
+  EmailAlreadyExistResponseDto,
 } from '../dto/create-account.dto';
 import { Request } from 'express';
 import {
@@ -14,7 +14,7 @@ import {
 } from '@nestjs/swagger';
 import { Public } from '@/auth/decorators/public.decorator';
 import {
-  VerifyEmailBadRequestResponse,
+  VerifyCodeInvalidResponseDto,
   VerifyEmailRequest,
 } from '../dto/verify-email.dto';
 import { User } from '@prisma/client';
@@ -34,9 +34,7 @@ export class UsersController {
   @Public()
   @Post()
   @ApiCreatedResponse({ type: OkResponseDto })
-  @ApiBadRequestResponse({
-    type: CreateAccountBadRequestResponse,
-  })
+  @ApiBadRequestResponse({ type: EmailAlreadyExistResponseDto })
   async createAccount(
     @Body() body: CreateAccountRequest,
   ): Promise<OkResponseDto> {
@@ -59,7 +57,7 @@ export class UsersController {
   @Public()
   @Patch('verify')
   @ApiOkResponse({ type: OkResponseDto })
-  @ApiBadRequestResponse({ type: VerifyEmailBadRequestResponse })
+  @ApiBadRequestResponse({ type: VerifyCodeInvalidResponseDto })
   async verifyEmail(
     @Body() verifyEmailRequest: VerifyEmailRequest,
   ): Promise<OkResponseDto> {

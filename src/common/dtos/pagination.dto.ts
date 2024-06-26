@@ -60,11 +60,12 @@ export class PaginationResponseDto<T>
   implements ResponseDto<PaginationData<T>>
 {
   @ApiProperty({ enum: ResponseStatus, example: ResponseStatus.OK })
-  statusCode!: ResponseStatus;
-
-  @ApiHideProperty()
-  message?: string;
+  statusCode = ResponseStatus.OK;
 
   @ApiProperty()
   data!: PaginationData<T>;
+
+  constructor(data: PaginationData<T>) {
+    this.data = data;
+  }
 }

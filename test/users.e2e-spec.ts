@@ -8,6 +8,9 @@ import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
 import { MailService } from '@/common/modules/mail/mail.service';
+import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { OkWithDataResponseDto } from '@/common/dtos/ok/ok-with-data.dto';
+import { VerifyCodeInvalidResponseDto } from '@/users/dto/verify-email.dto';
 
 describe('/api/users', () => {
   let app: INestApplication;
@@ -56,9 +59,7 @@ describe('/api/users', () => {
         .send(createAccountRequest);
 
       expect(status).toBe(201);
-      expect(body).toEqual({
-        ok: true,
-      });
+      expect(body).toEqual(new OkResponseDto());
 
       const [newUser] = await prisma.user.findMany();
 
@@ -80,10 +81,7 @@ describe('/api/users', () => {
       const { id, password, createdAt, updatedAt, ...rest } = user;
 
       expect(status).toBe(200);
-      expect(body).toEqual({
-        ok: true,
-        data: rest,
-      });
+      expect(body).toEqual(new OkWithDataResponseDto(rest));
     });
   });
 
@@ -95,10 +93,7 @@ describe('/api/users', () => {
         .send({ code: '123' });
 
       expect(status).toBe(400);
-      expect(body).toEqual({
-        ok: false,
-        message: '인증코드가 유효하지 않습니다.',
-      });
+      expect(body).toEqual(new VerifyCodeInvalidResponseDto());
     });
 
     it('이메일 인증이 성공적으로 완료된다.', async () => {
@@ -112,9 +107,7 @@ describe('/api/users', () => {
         .send({ code: verification?.code });
 
       expect(status).toBe(200);
-      expect(body).toEqual({
-        ok: true,
-      });
+      expect(body).toEqual(new OkResponseDto());
 
       const count = await prisma.verification.count();
 
