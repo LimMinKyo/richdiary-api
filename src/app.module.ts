@@ -1,6 +1,5 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
@@ -41,7 +40,6 @@ import { StockRecordsModule } from './stock-records/stock-records.module';
         EXCHANGE_APP_ID: Joi.string().required(),
       }),
     }),
-    PrismaModule,
     UsersModule,
     AuthModule,
     MailModule,

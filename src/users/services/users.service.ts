@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAccountRequest } from '../dto/create-account.dto';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { hashPassword } from '@/utils/password';
 import { MailService } from '@/mail/mail.service';
 import { VerifyEmailRequest } from '../dto/verify-email.dto';

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateStockRecordRequest } from '../dtos/create-stock-record.dto';
 import { User } from '@prisma/client';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import dayjs from 'dayjs';
 import { UpdateStockRecordRequest } from '../dtos/update-stock-record.dto';
 import { GetStockRecordsRequest } from '../dtos/get-stock-records.dto';

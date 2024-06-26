@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { PortfolioEntity } from '../entities/portfolio.entity';
 import { CreatePortfolioRequest } from '../dtos/create-portfolio.dto';

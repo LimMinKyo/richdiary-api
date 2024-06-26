@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DividendsService } from './dividends.service';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { Currency, Dividend, PrismaClient, User } from '@prisma/client';
 import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';

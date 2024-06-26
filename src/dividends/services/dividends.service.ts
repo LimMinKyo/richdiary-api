@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { UpdateDividendRequest } from '../dtos/update-dividend.dto';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { GetDividendsMonthRequest } from '../dtos/get-dividends-month.dto';
 import dayjs from 'dayjs';

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UsersModule } from '@/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { PrismaModule } from '@/prisma/prisma.module';
+import { PrismaModule } from '@/common/modules/prisma/prisma.module';
 import { MailModule } from '@/mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 

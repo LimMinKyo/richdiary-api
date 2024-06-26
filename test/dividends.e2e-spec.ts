@@ -4,7 +4,7 @@ import { CreateDividendRequest } from '@/dividends/dtos/create-dividend.dto';
 import { GetDividendsMonthRequest } from '@/dividends/dtos/get-dividends-month.dto';
 import { UpdateDividendRequest } from '@/dividends/dtos/update-dividend.dto';
 import { DividendEntity } from '@/dividends/entities/dividend.entity';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
