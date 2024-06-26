@@ -7,7 +7,7 @@ import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { CreateAccountRequest } from '@/users/dto/create-account.dto';
-import { MailService } from '@/mail/mail.service';
+import { MailService } from '@/common/modules/mail/mail.service';
 
 describe('/api/users', () => {
   let app: INestApplication;

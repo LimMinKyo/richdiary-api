@@ -2,7 +2,6 @@ import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { MailModule } from './mail/mail.module';
 import { DividendsModule } from './dividends/dividends.module';
 import Joi from 'joi';
 import { AppController } from './app.controller';
@@ -42,7 +41,6 @@ import { StockRecordsModule } from './stock-records/stock-records.module';
     }),
     UsersModule,
     AuthModule,
-    MailModule,
     DividendsModule,
     CommonModule,
     PortfoliosModule,
