@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { PrismaService } from '@/common/modules/prisma/prisma.service';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaClient } from '@prisma/client';
-import { MailModule } from '@/mail/mail.module';
+import { MailModule } from '@/common/modules/mail/mail.module';
 
 describe('UsersService', () => {
   let service: UsersService;

@@ -3,8 +3,8 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '@/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '@/common/modules/prisma/prisma.module';
-import { MailModule } from '@/mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from '@/common/modules/mail/mail.module';
 
 describe('AuthService', () => {
   let service: AuthService;
