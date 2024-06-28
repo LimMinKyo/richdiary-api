@@ -3,15 +3,15 @@ import { Response } from 'express';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { AuthService } from '../services/auth.service';
 import { Public } from '../decorators/public.decorator';
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { LoginRequest } from '../dtos/login.dto';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginRequest, LoginResponseData } from '../dtos/login.dto';
 import { KakaoAuthGuard } from '../guards/kakao-auth.guard';
 import { AuthUser } from '../decorators/auth-user.decorator';
 import { User } from '@prisma/client';
 import { REFRESH_TOKEN_KEY } from '../auth.constants';
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard';
 import { ResponseDto } from '@/common/dtos/response.dto';
-import { OkResponseDto } from '@/common/dtos/ok/ok.dto';
+import { ApiCreatedResponseWithData } from '@/common/decorators/api-created-response-with-data.decorator';
 
 @Controller('api/auth')
 @ApiTags('인증 API')
@@ -20,16 +20,17 @@ export class AuthController {
 
   @Public()
   @ApiOperation({ summary: '일반 로그인' })
-  @ApiOkResponse({ type: OkResponseDto })
+  @ApiCreatedResponseWithData(LoginResponseData)
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginRequest })
   @Post('login')
   async login(@AuthUser() user: User, @Res() res: Response): Promise<void> {
-    const { refreshToken, cookieOptions } = await this.authService.login(user);
+    const { refreshToken, cookieOptions, data } =
+      await this.authService.login(user);
 
     res
       .cookie(REFRESH_TOKEN_KEY, refreshToken, cookieOptions)
-      .send(ResponseDto.OK());
+      .send(ResponseDto.OK_WITH(data));
   }
 
   @Public()
