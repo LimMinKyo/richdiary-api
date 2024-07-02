@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
 } from 'class-validator';
 
@@ -22,14 +21,16 @@ export class CreateDividendRequest {
 
   @ApiProperty({ enum: Currency, description: '화폐' })
   @IsEnum(Currency)
+  @IsNotEmpty()
   currency!: Currency;
 
   @ApiProperty({ description: '배당금' })
   @IsNumber()
+  @IsNotEmpty()
   dividend!: number;
 
   @ApiPropertyOptional({ description: '세금' })
   @IsNumber()
-  @IsOptional()
-  tax?: number;
+  @IsNotEmpty()
+  tax!: number;
 }

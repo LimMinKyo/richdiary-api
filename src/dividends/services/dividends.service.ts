@@ -31,7 +31,11 @@ export class DividendsService {
         ...createDividendRequest,
         dividendAt: dayjs(createDividendRequest.dividendAt).toISOString(),
         tax: createDividendRequest.tax ? createDividendRequest.tax : 0,
-        userId: user.id,
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
       },
     });
   }
