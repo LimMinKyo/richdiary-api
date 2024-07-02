@@ -7,6 +7,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import dayjs from 'dayjs';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { ConfigService } from '@nestjs/config';
+import { UpdateDividendRequest } from '../dtos/update-dividend.dto';
 
 const mockUser: User = {
   id: '1',
@@ -70,6 +71,30 @@ describe('DividendsService', () => {
 
       // when
       const target = service.createDividend(mockUser, createDividendRequest);
+
+      // then
+      await expect(target).resolves.not.toThrow();
+    });
+  });
+
+  describe('updateDividend', () => {
+    it('성공적으로 배당일지가 수정된다.', async () => {
+      // given
+      const updateDividendRequest: UpdateDividendRequest = {
+        dividend: 1000,
+        dividendAt: '2024-07-02',
+        companyName: 'newCompanyName',
+        currency: Currency.USD,
+        tax: 10,
+      };
+      prisma.dividend.findUnique.mockResolvedValue(mockDividend);
+
+      // when
+      const target = service.updateDividend(
+        mockUser,
+        mockDividend.id,
+        updateDividendRequest,
+      );
 
       // then
       await expect(target).resolves.not.toThrow();
