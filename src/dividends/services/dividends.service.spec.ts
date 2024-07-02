@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DividendsService } from './dividends.service';
 import { PrismaService } from '@/common/modules/prisma/prisma.service';
-import { Currency, Dividend, PrismaClient, User } from '@prisma/client';
+import { Currency, Dividend, User } from '@prisma/client';
 import { CreateDividendRequest } from '../dtos/create-dividend.dto';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import dayjs from 'dayjs';
@@ -46,7 +46,7 @@ describe('DividendsService', () => {
       ],
     })
       .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaClient>())
+      .useValue(mockDeep<PrismaService>())
       .compile();
 
     service = module.get(DividendsService);
@@ -58,7 +58,7 @@ describe('DividendsService', () => {
   });
 
   describe('createDividend', () => {
-    it('Success', async () => {
+    it('성공적으로 배당일지가 생성된다.', async () => {
       // given
       const createDividendRequest: CreateDividendRequest = {
         dividend: mockDividend.dividend,
@@ -69,17 +69,23 @@ describe('DividendsService', () => {
       };
 
       // when
-      await service.createDividend(mockUser, createDividendRequest);
+      const target = service.createDividend(mockUser, createDividendRequest);
+
+      // then
+      await expect(target).resolves.not.toThrow();
     });
   });
 
   describe('deleteDividend', () => {
-    it('Success', async () => {
-      // // given
-      prisma.dividend.findFirst.mockResolvedValue(mockDividend);
+    it('배당일지가 성공적으로 삭제된다.', async () => {
+      // given
+      prisma.dividend.findUnique.mockResolvedValue(mockDividend);
 
       // when
-      await service.deleteDividend(mockUser, mockDividend.id);
+      const target = service.deleteDividend(mockUser, mockDividend.id);
+
+      // then
+      await expect(target).resolves.not.toThrow();
     });
   });
 });

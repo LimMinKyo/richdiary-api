@@ -136,7 +136,7 @@ export class DividendsService {
   }
 
   private async checkIsOwnDividend(user: User, dividendId: string) {
-    const dividend = await this.prisma.dividend.findFirst({
+    const dividend = await this.prisma.dividend.findUnique({
       where: { id: dividendId },
     });
 
