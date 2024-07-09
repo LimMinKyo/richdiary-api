@@ -105,12 +105,6 @@ export class DividendsService {
       dayjs(date).format('YYYY-MM'),
     );
 
-    if (!exchangeData) {
-      throw new InternalServerErrorException(
-        '환율 데이터 조회에 실패했습니다.',
-      );
-    }
-
     const result = await this.prisma.dividend.findMany({
       where: {
         userId: user.id,

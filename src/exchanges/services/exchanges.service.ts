@@ -1,5 +1,9 @@
 import { PrismaService } from '@/common/modules/prisma/prisma.service';
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 import { ExchangeEntity } from '../entity/exchange.entity';
@@ -23,22 +27,32 @@ export class ExchangesService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async getExchangeRate(searchdate: string): Promise<ExchangeEntity> {
-    const APP_ID = this.configService.get('EXCHANGE_APP_ID');
+  async getExchangeRate(searchDate: string): Promise<ExchangeEntity> {
+    searchDate = dayjs(searchDate).format('YYYY-MM');
 
-    const formatedSearchDate = dayjs(searchdate).format('YYYY-MM');
-
-    let data = await this.prisma.exchange.findUnique({
+    const data = await this.prisma.exchange.findUnique({
       where: {
         date_currency: {
-          date: formatedSearchDate,
+          date: searchDate,
           currency: 'USD',
         },
       },
     });
 
-    if (!data) {
-      const searchDateEndOfMonth = dayjs(searchdate)
+    if (data) {
+      return new ExchangeEntity(data);
+    }
+
+    const newData = await this.fetchAndSaveExchangeRate(searchDate);
+
+    return new ExchangeEntity(newData);
+  }
+
+  private async fetchAndSaveExchangeRate(searchDate: string) {
+    try {
+      const APP_ID = this.configService.get('EXCHANGE_APP_ID');
+
+      const searchDateEndOfMonth = dayjs(searchDate)
         .endOf('month')
         .format('YYYY-MM-DD');
 
@@ -54,20 +68,27 @@ export class ExchangesService {
 
       requestUrl.search = searchParams;
 
+      this.logger.debug('환율 조회 API 요청 Start');
+
       const response = await fetch(requestUrl);
       const exchangeApiData: ExchangeApiData = await response.json();
 
-      this.logger.debug('환율 조회 API 요청');
+      this.logger.debug('환율 조회 API 요청 End');
 
-      data = await this.prisma.exchange.create({
+      const data = await this.prisma.exchange.create({
         data: {
-          date: formatedSearchDate,
+          date: dayjs(searchDate).format('YYYY-MM'),
           currency: 'USD',
           rate: +exchangeApiData.rates['KRW'].toFixed(2),
         },
       });
-    }
 
-    return new ExchangeEntity(data);
+      return data;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        '환율 데이터 조회에 실패했습니다.',
+      );
+    }
   }
 }
