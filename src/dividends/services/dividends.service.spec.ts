@@ -8,6 +8,9 @@ import dayjs from 'dayjs';
 import { ExchangesService } from '@/exchanges/services/exchanges.service';
 import { ConfigService } from '@nestjs/config';
 import { UpdateDividendRequest } from '../dtos/update-dividend.dto';
+import { when } from 'jest-when';
+import { PermissionDeniedException } from '@/common/exceptions/permission-denied.exception';
+import { DataNotFoundException } from '@/common/exceptions/data-not-found.exception';
 
 const mockUser: User = {
   id: '1',
@@ -68,6 +71,13 @@ describe('DividendsService', () => {
         currency: mockDividend.currency,
         tax: mockDividend.tax,
       };
+      when(prisma.dividend.create).calledWith({
+        data: {
+          ...createDividendRequest,
+          dividendAt: dayjs(createDividendRequest.dividendAt).toISOString(),
+          user: { connect: { id: mockUser.id } },
+        },
+      });
 
       // when
       const target = service.createDividend(mockUser, createDividendRequest);
@@ -87,7 +97,9 @@ describe('DividendsService', () => {
         currency: Currency.USD,
         tax: 10,
       };
-      prisma.dividend.findUnique.mockResolvedValue(mockDividend);
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
 
       // when
       const target = service.updateDividend(
@@ -99,18 +111,97 @@ describe('DividendsService', () => {
       // then
       await expect(target).resolves.not.toThrow();
     });
+
+    it('없는 배당일지 수정을 요청할 경우 에러를 반환한다.', async () => {
+      // given
+      const updateDividendRequest: UpdateDividendRequest = {
+        dividend: 1000,
+        dividendAt: '2024-07-02',
+        companyName: 'newCompanyName',
+        currency: Currency.USD,
+        tax: 10,
+      };
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
+
+      // when
+      const target = service.updateDividend(
+        mockUser,
+        'Invalid Id',
+        updateDividendRequest,
+      );
+
+      // then
+      await expect(target).rejects.toThrow(DataNotFoundException);
+    });
+
+    it('해당 배당일지를 수정할 권한이 없는 경우 에러를 반환한다.', async () => {
+      // given
+      const updateDividendRequest: UpdateDividendRequest = {
+        dividend: 1000,
+        dividendAt: '2024-07-02',
+        companyName: 'newCompanyName',
+        currency: Currency.USD,
+        tax: 10,
+      };
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
+
+      // when
+      const target = service.updateDividend(
+        { ...mockUser, id: 'No Permission User Id' },
+        mockDividend.id,
+        updateDividendRequest,
+      );
+
+      // then
+      await expect(target).rejects.toThrow(PermissionDeniedException);
+    });
   });
 
   describe('deleteDividend', () => {
     it('배당일지가 성공적으로 삭제된다.', async () => {
       // given
-      prisma.dividend.findUnique.mockResolvedValue(mockDividend);
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
 
       // when
       const target = service.deleteDividend(mockUser, mockDividend.id);
 
       // then
       await expect(target).resolves.not.toThrow();
+    });
+
+    it('없는 배당일지 삭제를 요청할 경우 에러를 반환한다.', async () => {
+      // given
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
+
+      // when
+      const target = service.deleteDividend(mockUser, 'Invalid Id');
+
+      // then
+      await expect(target).rejects.toThrow(DataNotFoundException);
+    });
+
+    it('해당 배당일지를 삭제할 권한이 없는 경우 에러를 반환한다.', async () => {
+      // given
+      when(prisma.dividend.findUnique)
+        .calledWith({ where: { id: mockDividend.id } })
+        .mockResolvedValue(mockDividend);
+
+      // when
+      const target = service.deleteDividend(
+        { ...mockUser, id: 'No Permission User Id' },
+        mockDividend.id,
+      );
+
+      // then
+      await expect(target).rejects.toThrow(PermissionDeniedException);
     });
   });
 });
