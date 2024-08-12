@@ -25,25 +25,27 @@ datasource db {
 /// @namespace 부자일기
 model User {
   /// @format uuid
-  id           String        @id @default(uuid()) @db.Uuid
+  id                      String                    @id @default(uuid()) @db.Uuid
   /// 생성일
-  createdAt    DateTime      @default(now()) @db.Timestamptz()
+  createdAt               DateTime                  @default(now()) @db.Timestamptz()
   /// 수정일
-  updatedAt    DateTime      @updatedAt @db.Timestamptz()
+  updatedAt               DateTime                  @updatedAt @db.Timestamptz()
   /// 이름
-  name         String
+  name                    String
   /// 이메일
-  email        String        @unique
+  email                   String                    @unique
   /// Provider가 LOCAL이 아닐 경우 null
-  password     String?
+  password                String?
   /// 회원가입 경로
-  provider     Provider
+  provider                Provider
   /// 이메일 인증 여부
-  verified     Boolean       @default(false)
-  verification Verification?
-  dividends    Dividend[]
-  Portfolios   Portfolio[]
-  StockRecords StockRecord[]
+  verified                Boolean                   @default(false)
+  verification            Verification?
+  dividends               Dividend[]
+  Portfolios              Portfolio[]
+  StockRecords            StockRecord[]
+  FinancialLedger         FinancialLedger[]
+  FinancialLedgerCategory FinancialLedgerCategory[]
 }
 
 /// 이메일 인증 코드
@@ -136,6 +138,64 @@ model StockRecord {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+/// 가계부
+///
+/// @namespace 부자일기
+model FinancialLedger {
+  /// @format uuid
+  id           String                      @id @default(uuid()) @db.Uuid
+  /// 생성일
+  createdAt    DateTime                    @default(now()) @db.Timestamptz()
+  /// 수정일
+  updatedAt    DateTime                    @updatedAt @db.Timestamptz()
+  /// 기록일
+  recordAt     DateTime                    @db.Timestamptz()
+  /// 카테고리 유형
+  categoryType FinancialLedgerCategoryType
+  /// 카테고리 ID
+  categoryId   String?                     @db.Uuid
+  category     FinancialLedgerCategory?    @relation(fields: [categoryId], references: [id])
+  /// 제목
+  title        String
+  /// 메모
+  memo         String
+  /// 금액
+  amount       Int
+  /// 유저 ID
+  userId       String                      @db.Uuid
+  user         User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 가계부 카테고리
+///
+/// @namespace 부자일기
+model FinancialLedgerCategory {
+  /// @format uuid
+  id               String                      @id @default(uuid()) @db.Uuid
+  /// 생성일
+  createdAt        DateTime                    @default(now()) @db.Timestamptz()
+  /// 수정일
+  updatedAt        DateTime                    @updatedAt @db.Timestamptz()
+  /// 카테고리
+  categoryType     FinancialLedgerCategoryType
+  /// 부모 카테고리 ID
+  parentCategoryId String?                     @db.Uuid
+  parentCategory   FinancialLedgerCategory?    @relation("CategorySubcategory", fields: [parentCategoryId], references: [id])
+  subcategories    FinancialLedgerCategory[]   @relation("CategorySubcategory")
+  /// 이름
+  name             String
+  /// 유저 ID
+  userId           String                      @db.Uuid
+  user             User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  //---
+  // RELATIONS
+  //---
+  FinancialLedger FinancialLedger[]
+
+  @@index([parentCategoryId])
+}
+
 /// 환율
 ///
 /// @namespace 부자일기
@@ -164,4 +224,10 @@ enum Provider {
 enum Currency {
   KRW
   USD
+}
+
+enum FinancialLedgerCategoryType {
+  INCOME
+  EXPENDITURE
+  SAVE
 }

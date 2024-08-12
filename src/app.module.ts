@@ -9,6 +9,7 @@ import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { PortfoliosModule } from './portfolios/portfolios.module';
 import { StockRecordsModule } from './stock-records/stock-records.module';
+import { FinancialLedgersModule } from './financial-ledgers/financial-ledgers.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { StockRecordsModule } from './stock-records/stock-records.module';
     CommonModule,
     PortfoliosModule,
     StockRecordsModule,
+    FinancialLedgersModule,
   ],
   providers: [
     {
