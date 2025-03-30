@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json .
 
 # 패키지 의존성이 변하지 않으면 캐싱 사용
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 
 COPY . .
 
@@ -20,8 +20,6 @@ FROM node:18-alpine
 WORKDIR /app
 
 COPY --from=build /app ./
-
-RUN npm install pm2 -g
 
 EXPOSE 4000
 

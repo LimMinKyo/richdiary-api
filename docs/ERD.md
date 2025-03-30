@@ -60,25 +60,15 @@ erDiagram
   DateTime updatedAt
   DateTime recordAt
   FinancialLedgerCategoryType categoryType
-  String categoryId FK "nullable"
   String title
   String memo
   Int amount
   String userId FK
 }
-"FinancialLedgerCategory" {
-  String id PK
-  DateTime createdAt
-  DateTime updatedAt
-  FinancialLedgerCategoryType categoryType
-  String parentCategoryId FK "nullable"
-  String name
-  String userId FK
-}
 "Exchange" {
   DateTime createdAt
   DateTime updatedAt
-  String date
+  DateTime date
   Currency currency
   Float rate
 }
@@ -87,10 +77,7 @@ erDiagram
 "Dividend" }o--|| "User" : user
 "Dividend" }o--o| "Portfolio" : portfolio
 "StockRecord" }o--|| "User" : user
-"FinancialLedger" }o--o| "FinancialLedgerCategory" : category
 "FinancialLedger" }o--|| "User" : user
-"FinancialLedgerCategory" }o--o| "FinancialLedgerCategory" : parentCategory
-"FinancialLedgerCategory" }o--|| "User" : user
 ```
 
 ### `User`
@@ -165,22 +152,9 @@ erDiagram
   - `updatedAt`: 수정일
   - `recordAt`: 기록일
   - `categoryType`: 카테고리 유형
-  - `categoryId`: 카테고리 ID
   - `title`: 제목
   - `memo`: 메모
   - `amount`: 금액
-  - `userId`: 유저 ID
-
-### `FinancialLedgerCategory`
-가계부 카테고리
-
-**Properties**
-  - `id`: 
-  - `createdAt`: 생성일
-  - `updatedAt`: 수정일
-  - `categoryType`: 카테고리
-  - `parentCategoryId`: 부모 카테고리 ID
-  - `name`: 이름
   - `userId`: 유저 ID
 
 ### `Exchange`
